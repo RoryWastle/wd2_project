@@ -20,6 +20,11 @@
 </head>
 <body>
 	<?php include('header.php'); ?>
-	<h1>Welcome!</h1>
+
+	<div class="container">
+		<h1 class="pt-3">Welcome!</h1>
+	</div>
+
+	<?php include('footer.php'); ?>
 </body>
 </html>
