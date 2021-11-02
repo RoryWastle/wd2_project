@@ -6,6 +6,10 @@
  * ************************************************************/
 
 	require('db_connect.php');
+
+	$query = "SELECT * FROM albums";
+    $statement = $db->prepare($query); // Returns a PDOStatement object.
+    $statement->execute(); // The query is now executed.
 ?>
 
 <!DOCTYPE html>
@@ -16,13 +20,24 @@
 	<title>Winnipeg's Classic Albums | Albums</title>
 
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-
+    <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
 	<?php include('header.php'); ?>
 
 	<div class="container">
 		<h1 class="pt-3">Albums</h1>
+
+
+		<?php while ($row = $statement->fetch()): ?>
+			<div class="card">
+				<div class="card-body">
+					<h4 class="card-title"><a href="show.php?album=<?= $row['albumID'] ?>"><?= $row['title'] ?></a></h4>
+					<h6 class="card-subtitle mb-2 text-muted"><?= $row['artist'] ?> - <?= $row['year'] ?></h6>
+					<p><?= $row['likes'] ?> people like this album</p>
+				</div>
+			</div>
+    	<?php endwhile ?>
 	</div>
 
 	<?php include('footer.php'); ?>

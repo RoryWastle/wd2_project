@@ -6,6 +6,6 @@
  * ************************************************************/
 
 ?>
-<footer class="navbar fixed-bottom bg-light text-muted">
+<footer class="navbar bg-light text-muted">
     <h4 class="p-3"><small>For</small> XYZ 98.7 Winnipeg's Classic Rock</h4>
 </footer>

@@ -1,0 +1,15 @@
+body{
+	height: 100%;
+}
+
+footer{
+	text-align: center;
+	position: relative;
+	bottom: 0;
+}
+
+@media(min-width: 768px){
+	form{
+		width: 50%;
+	}
+}

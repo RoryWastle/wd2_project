@@ -21,6 +21,9 @@
             <li class="nav-item">
                 <a class="nav-link" href="search.php">Search</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" href="create.php">Add</a>
+            </li>
         </ul>
     </div>
     <p class="text-right"><a href="register.php">Login or Register</a></p>
