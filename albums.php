@@ -28,7 +28,6 @@
 	<div class="container">
 		<h1 class="pt-3">Albums</h1>
 
-
 		<?php while ($row = $statement->fetch()): ?>
 			<div class="card">
 				<div class="card-body">
