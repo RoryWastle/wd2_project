@@ -1,0 +1,14 @@
+@media(min-width: 768px){
+	form{
+		width: 50%;
+	}
+
+	#album-summary{
+		width: 440px;
+		float:  left;
+	}
+
+	#end-of-summary{
+		clear: both;
+	}
+}

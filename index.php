@@ -41,6 +41,7 @@
 		<h3>Winnipeg's most popular classic album</h3>
 		<div class="card">
 			<div class="card-body">
+				<img src="uploads/thumbnail_<?= $row['coverURL'] ?>" alt="">
 				<h4 class="card-title"><a href="show.php?album=<?= $album['albumID'] ?>"><?= $album['title'] ?></a></h4>
 				<h6 class="card-subtitle mb-2 text-muted"><?= $album['artist'] ?> - <?= $album['year'] ?></h6>
 				<p><?= $album['likes'] ?> people like this album</p>
