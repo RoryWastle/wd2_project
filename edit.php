@@ -16,17 +16,17 @@
         $statement = $db->prepare($query);
         $statement->bindValue(':albumID', $albumID, PDO::PARAM_INT);
         $statement->execute();
-
         $album = $statement->fetch();
 
         $query = "SELECT * FROM genres";
-        $statement = $db->prepare($query); // Returns a PDOStatement object.
-        $statement->execute(); // The query is now executed.
+        $statement = $db->prepare($query);
+        $statement->execute();
         $genres = $statement->fetchAll();
 
-        $query = "SELECT * FROM albumgenre WHERE albumID = $_GET['albumID']";
-        $statement = $db->prepare($query); // Returns a PDOStatement object.
-        $statement->execute(); // The query is now executed.
+        $query = "SELECT * FROM albumgenre WHERE albumID = :albumID";
+        $statement = $db->prepare($query);
+        $statement->bindValue(':albumID', $albumID, PDO::PARAM_INT);
+        $statement->execute();
         $currentGenres = $statement->fetchAll();
     } else {
         header("Location: index.php");
@@ -37,8 +37,10 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Winnipeg's Classic Albums | Edit Albums</title>
-    <link rel="stylesheet" type="text/css" href="styles.css" />
+    <title>Winnipeg's Classic Albums | <?= $album['title'] ?> Edit</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="stylesa.css">
 </head>
 <body>
     <?php include('header.php'); ?>
@@ -47,22 +49,32 @@
 
         <h1 class="pt-3">Edit Album</h1>
 
-        <form action="process_post.php" method="post" class="form-inline">
+        <form action="process_post.php?albumID=<?= $albumID ?>" method="post" class="form-inline">
             <div class="form-group p-3">
                 <label for="title">Title*</label>
-                <input class="form-control" name="title" id="title" value=<?= $album['title'] ?>/>
+                <input class="form-control" name="title" id="title" value="<?= $album['title'] ?>" />
             </div>
             <div class="form-group p-3">
                 <label for="artist">Artist*</label>
-                <input class="form-control" name="artist" id="artist" value=<?= $album['artist'] ?>/>
+                <input class="form-control" name="artist" id="artist" value="<?= $album['artist'] ?>" />
             </div>
-            <div class="form-group p-3">
-                <label for="image">Album Cover</label>
-                <input class="form-control" type="file" name="image" id="image"> // CHANGE LATER
-            </div>
+            <?php if($album['coverURL'] == NULL): ?>
+                <div class="form-group p-3">
+                    <label for="image">Album Cover</label>
+                    <input class="form-control" type="file" name="image" id="image">
+                </div>
+            <?php else: ?>
+                <div class="form-group p-3">
+                    <input  class="btn btn-danger" 
+                            type="submit" 
+                            name="command" 
+                            value="Remove Image" 
+                            onclick="return confirm('Are you sure you wish to remove this image?')" />
+                </div>
+            <?php endif ?>
             <div class="form-group p-3">
                 <label for="year">Year</label>
-                <input class="form-control mb-2" name="year" id="year" value=<?= $album['year'] ?>/>
+                <input class="form-control mb-2" name="year" id="year" value="<?= $album['year'] ?>" />
             </div>
             <div class="card genre-card">
                 <div class="card-body p-3">
@@ -95,7 +107,7 @@
             </div>
             <div class="form-group p-3">
                 <input class="btn btn-primary" type="submit" name="command" value="Update" />
-                <input class="btn btn-warning" type="submit" name="command" value="Delete" onclick="return confirm('Are you sure you wish to delete this post?')" />
+                <input class="btn btn-danger" type="submit" name="command" value="Delete" onclick="return confirm('Are you sure you wish to delete this post?')" />
             </div>
         </form>
     </div>

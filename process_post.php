@@ -29,7 +29,7 @@
 
     function file_upload_path($original_filename, $upload_subfolder_name = 'uploads'){
         $current_folder = dirname(__FILE__);
-        $path_segments  = [$current_folder, $upload_subfolder_name, $original_filename];
+        $path_segments  = [$current_folder, $upload_subfolder_name, basename($original_filename)];
        
         return join(DIRECTORY_SEPARATOR, $path_segments);
     }
@@ -68,7 +68,21 @@
 
     $valid = false;
     
-    if ($_POST && !empty($_POST['title']) && !empty($_POST['artist'])) {
+    if ($_POST && $_POST['command'] == "Remove Image"){
+        $query = "UPDATE albums SET coverURL = NULL, updated = current_timestamp() WHERE albumID = :albumID";
+        $statement = $db->prepare($query);
+        $statement->bindValue(":albumID", $_GET['albumID'], PDO::PARAM_INT);
+
+        //  Execute the command.
+        //  execute() will check for possible SQL injection and remove if necessary
+        if($statement->execute()){
+            $valid = true;
+
+            header("Location: edit.php?albumID=".$_GET['albumID']);
+            exit;
+        }
+    }
+    elseif ($_POST && !empty($_POST['title']) && !empty($_POST['artist'])) {
         //  Sanitize user input to escape HTML entities and filter out dangerous characters.
         $title  = filter_input(INPUT_POST, 'title', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $artist = filter_input(INPUT_POST, 'artist', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -91,7 +105,7 @@
         }
         elseif($_POST['command'] == "Update"){
             //  Build the parameterized SQL query and bind to the above sanitized values.
-            $query = "UPDATE albums SET title = :title, artist = :artist, year = :year, coverURL = :coverURL, description = :description, updated = :updated WHERE albumID = :albumID";
+            $query = "UPDATE albums SET title = :title, artist = :artist, year = :year, coverURL = :coverURL, description = :description, updated = current_timestamp() WHERE albumID = :albumID";
         }
         else{
             $query = "DELETE FROM albums WHERE albumID = :albumID";
@@ -125,14 +139,11 @@
             }
         }  
         if($_POST['command'] != "Create"){
-            $statement->bindValue(":albumID", $_GET['album'], PDO::PARAM_INT); // CHANGE LAATER
+            $statement->bindValue(":albumID", $_GET['albumID'], PDO::PARAM_INT);
         }
 
         if($_POST['command'] == "Create"){
             $statement->bindValue(":postedBy", 1); // CHANGE LATER
-        }
-        elseif($_POST['command'] == "Update"){
-            $statement->bindValue(":updated", "current_timestamp()");
         }
 
         //  Execute the command.

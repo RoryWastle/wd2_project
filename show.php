@@ -55,7 +55,7 @@
         <div class="card" id="album-summary">
             <div class="card-body">
                 <h4 class="card-title"><?= $album['title'] ?></h4>
-                <small><a href="edit.php?<?= $id ?>">Edit</a></small>
+                <small><a href="edit.php?albumID=<?= $id ?>">Edit</a></small>
                 <h6 class="card-subtitle mb-2 text-muted"><?= $album['artist'] ?> - <?= $album['year'] == NULL ? "[unknown year]" : $album['year'] ?></h6>
                 <img src="uploads/medium_<?= $album['coverURL'] ?>" alt="<?= $album['title'] ?> cover" />
                 <hr />
