@@ -49,7 +49,7 @@
 
         <h1 class="pt-3">Edit Album</h1>
 
-        <form action="process_post.php?albumID=<?= $albumID ?>" method="post" class="form-inline">
+        <form action="process_post.php?albumID=<?= $albumID ?>" method="post" enctype="multipart/form-data" class="form-inline">
             <div class="form-group p-3">
                 <label for="title">Title*</label>
                 <input class="form-control" name="title" id="title" value="<?= $album['title'] ?>" />
@@ -65,11 +65,13 @@
                 </div>
             <?php else: ?>
                 <div class="form-group p-3">
-                    <input  class="btn btn-danger" 
-                            type="submit" 
-                            name="command" 
-                            value="Remove Image" 
-                            onclick="return confirm('Are you sure you wish to remove this image?')" />
+                    <input  
+                        class="btn btn-danger" 
+                        type="submit" 
+                        name="command" 
+                        value="Remove Image" 
+                        onclick="return confirm('Are you sure you wish to remove this image?')"
+                    />
                 </div>
             <?php endif ?>
             <div class="form-group p-3">

@@ -9,7 +9,7 @@
     if(isset($_GET['album'])){
         $id = filter_input(INPUT_GET, 'album', FILTER_SANITIZE_NUMBER_INT);
 
-        //  Select the quote to edit/delete.
+        //  Select the album.
         $query = "SELECT * FROM albums WHERE albumID = :id";
         $statement = $db->prepare($query);
         $statement->bindValue(':id', $id, PDO::PARAM_INT);
@@ -68,11 +68,12 @@
                     </ul>
                 <?php endif ?>
                 <p><?= $album['likes'] ?> people like this album</p>
-                <button class="btn btn-success">Like</button>
+                <button class="btn btn-primary">Like</button>
             </div>
         </div>
-
-        <p class="p-3 pl-3"><?= $album['description'] ?></p>
+        <div class="p-3">
+            <p><?= $album['description'] ?></p>
+        </div>
         
         <div id="end-of-summary">
             <p>Posted by <?= $user['name'] ?>. Last updated <?= $album['updated'] ?></p>

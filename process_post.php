@@ -141,8 +141,7 @@
         if($_POST['command'] != "Create"){
             $statement->bindValue(":albumID", $_GET['albumID'], PDO::PARAM_INT);
         }
-
-        if($_POST['command'] == "Create"){
+        else{
             $statement->bindValue(":postedBy", 1); // CHANGE LATER
         }
 
