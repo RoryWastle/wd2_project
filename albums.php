@@ -32,7 +32,7 @@
 			<div class="card">
 				<div class="card-body">
 					<?php if($row['coverURL'] != NULL): ?>
-						<img src="uploads/thumbnail_<?= $row['coverURL'] ?>" alt="<?= $row['title'] ?> cover.">
+						<img src="uploads/thumbnail_<?= $row['coverURL'] ?>" alt="<?= $row['title'] ?> cover." class="thumb" />
 					<?php endif ?>
 					<h4 class="card-title"><a href="show.php?album=<?= $row['albumID'] ?>"><?= $row['title'] ?></a></h4>
 					<h6 class="card-subtitle mb-2 text-muted"><?= $row['artist'] ?> - <?= $row['year'] ?></h6>

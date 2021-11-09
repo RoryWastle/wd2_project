@@ -40,7 +40,7 @@
     <title>Winnipeg's Classic Albums | <?= $album['title'] ?> Edit</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="stylesa.css">
+    <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
     <?php include('header.php'); ?>
@@ -84,21 +84,33 @@
                     <select class="form-control" id="genre1" name="genre1">
                         <option value="0"></option>
                         <?php foreach ($genres as $genre): ?>
-                            <option value=<?= $genre['genreID'] ?>><?= $genre['genre'] ?></option>
+                            <option 
+                                value=<?= $genre['genreID'] ?> 
+                                <?php if(count($currentGenres) > 0 && $genre['genreID'] == $currentGenres[0]['genreID']): ?> selected <?php endif ?> >
+                                <?= $genre['genre'] ?>
+                            </option>
                         <?php endforeach ?>
                     </select>
                     <label for="genre2">Genre 2</label>
                     <select class="form-control" id="genre2" name="genre2">
                         <option value="0"></option>
                         <?php foreach ($genres as $genre): ?>
-                            <option value=<?= $genre['genreID'] ?>><?= $genre['genre'] ?></option>
+                            <option 
+                                value=<?= $genre['genreID'] ?> 
+                                <?php if(count($currentGenres) > 1 && $genre['genreID'] == $currentGenres[1]['genreID']): ?> selected <?php endif ?> >
+                                <?= $genre['genre'] ?>
+                            </option>
                         <?php endforeach ?>
                     </select>
                     <label for="genre3">Genre 3</label>
                     <select class="form-control" id="genre3" name="genre3">
                         <option value="0"></option>
                         <?php foreach ($genres as $genre): ?>
-                            <option value=<?= $genre['genreID'] ?>><?= $genre['genre'] ?></option>
+                            <option 
+                                value=<?= $genre['genreID'] ?> 
+                                <?php if(count($currentGenres) > 2 && $genre['genreID'] == $currentGenres[2]['genreID']): ?> selected <?php endif ?> >
+                                <?= $genre['genre'] ?>
+                            </option>
                         <?php endforeach ?>
                     </select>
                 </div>

@@ -5,6 +5,7 @@
      * Purpose: To create a new record in the classic albums database.
      **********************************************************************/
 
+    //  Gets the most recent album added.
     function getMostRecent($db){
         $query = "SELECT MAX(albumID) AS latest FROM albums";
         $statement = $db->prepare($query);
@@ -27,6 +28,15 @@
         }
     }
 
+    //  Remove previous linked genres to albums when updated.
+    function remove_previous_genres($albumID, $db){
+        $query = "DELETE FROM albumgenre WHERE albumID = :albumID";
+        $statement = $db->prepare($query);
+        $statement->bindValue(":albumID", $albumID, PDO::PARAM_INT);
+        $statement->execute();
+    }
+
+    //  Create the path to where files shall be uploaded to.
     function file_upload_path($original_filename, $upload_subfolder_name = 'uploads'){
         $current_folder = dirname(__FILE__);
         $path_segments  = [$current_folder, $upload_subfolder_name, basename($original_filename)];
@@ -34,6 +44,7 @@
         return join(DIRECTORY_SEPARATOR, $path_segments);
     }
 
+    //  Test to see if uploaded files are images.
     function file_is_an_image($temporary_path, $new_path) {
         $allowed_mime_types      = ['image/gif', 'image/jpeg', 'image/png'];
         $allowed_file_extensions = ['gif', 'jpg', 'jpeg', 'png'];
@@ -47,11 +58,12 @@
         return $file_extension_is_valid && $mime_type_is_valid;
     }
 
+    //  Upload three sizes of the same image to the uploads folder.
     function upload_files($temporary_path, $new_path) {
         $image_filename = $_FILES['image']['name'];
 
         $image = new \Gumlet\ImageResize($temporary_path);
-        $image->resizeToWidth(50);
+        $image->resizeToWidth(75);
         $image->save(file_upload_path('thumbnail_' . $image_filename));
 
         $image = new \Gumlet\ImageResize($temporary_path);
@@ -61,24 +73,28 @@
         move_uploaded_file($temporary_path, $new_path);
     }
 
-
+    //  Required files.
     require('db_connect.php');
     require('\xampp\htdocs\a\php-image-resize-master\lib\ImageResize.php');
     require('\xampp\htdocs\a\php-image-resize-master\lib\ImageResizeException.php');
 
     $valid = false;
     
+    //  If the command was to remove the image.
     if ($_POST && $_POST['command'] == "Remove Image"){
+        //  Select the cover url.
         $query = "SELECT coverURL FROM albums WHERE albumID = :albumID";
         $statement = $db->prepare($query);
         $statement->bindValue(":albumID", $_GET['albumID'], PDO::PARAM_INT);
         $statement->execute();
         $image = $statement->fetch()['coverURL'];
 
+        //  Remove the three imaged associated with the url.
         unlink("uploads/".$image);
         unlink("uploads/medium_".$image);
         unlink("uploads/thumbnail_".$image);
 
+        //  Set the cover url value in for this album to null.
         $query = "UPDATE albums SET coverURL = NULL, updated = current_timestamp() WHERE albumID = :albumID";
         $statement = $db->prepare($query);
         $statement->bindValue(":albumID", $_GET['albumID'], PDO::PARAM_INT);
@@ -92,12 +108,16 @@
             exit;
         }
     }
+    //  If a different command was made.
     elseif ($_POST && !empty($_POST['title']) && !empty($_POST['artist'])) {
         //  Sanitize user input to escape HTML entities and filter out dangerous characters.
         $title  = filter_input(INPUT_POST, 'title', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $artist = filter_input(INPUT_POST, 'artist', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
+        //  If the year is unsanitary, set it to null.
         $year = !empty($_POST['year']) ? filter_input(INPUT_POST, 'year', FILTER_SANITIZE_NUMBER_INT) : NULL;
+
+        //  If the year is not numeric or is not four digits, set the value to null.
         if(is_numeric($year)){
             if($year < 1000 && $year >= 9999){
                 $year = NULL;
@@ -107,22 +127,45 @@
             $year = NULL;
         }
 
+        //  If the description is unsanitary, set it to null.
         $description = !empty($_POST['description']) ? filter_input(INPUT_POST, 'description', FILTER_SANITIZE_FULL_SPECIAL_CHARS) : NULL;
+
+        //  See if an image upload is detected.
+        $image_upload_detected = isset($_FILES['image']) && ($_FILES['image']['error'] === 0);
         
+        //  If the command was Create.
         if($_POST['command'] == "Create"){
-            //  Build the parameterized SQL query and bind to the above sanitized values.
-            $query = "INSERT INTO albums (title, artist, year, coverURL, description, postedBy) VALUES (:title, :artist, :year, :coverURL, :description, :postedBy)";
+            //  Build the query based on if an image was uploaded.
+            if($image_upload_detected) { 
+                //  Build the parameterized SQL query and bind to the above sanitized values.
+                $query = "INSERT INTO albums (title, artist, year, coverURL, description, postedBy) VALUES (:title, :artist, :year, :coverURL, :description, :postedBy)";
+            }
+            else{
+                $query = "INSERT INTO albums (title, artist, year, description, postedBy) VALUES (:title, :artist, :year, :description, :postedBy)";
+            }
         }
+        //  If the command was to Update
         elseif($_POST['command'] == "Update"){
-            //  Build the parameterized SQL query and bind to the above sanitized values.
-            $query = "UPDATE albums SET title = :title, artist = :artist, year = :year, coverURL = :coverURL, description = :description, updated = current_timestamp() WHERE albumID = :albumID";
+            //  Build the query based on if an image was uploaded.
+            if($image_upload_detected) { 
+                //  Build the parameterized SQL query and bind to the above sanitized values.
+                $query = "UPDATE albums SET title = :title, artist = :artist, year = :year, coverURL = :coverURL, description = :description, updated = current_timestamp() WHERE albumID = :albumID";
+            }
+            else{
+                $query = "UPDATE albums SET title = :title, artist = :artist, year = :year, description = :description, updated = current_timestamp() WHERE albumID = :albumID";
+            }
+
+            //  Remove any genres associated with this album.
+            remove_previous_genres($_GET['albumID'], $db);
         }
+        //  If the command was to delete.
         else{
             $query = "DELETE FROM albums WHERE albumID = :albumID";
         }
 
         $statement = $db->prepare($query);
 
+        //  If the command was not to Delete.
         if($_POST['command'] != "Delete"){
             //  Bind values to the parameters
             $statement->bindValue(":title", $title);
@@ -130,27 +173,29 @@
             $statement->bindValue(":year", $year, PDO::PARAM_INT);
             $statement->bindValue(":description", $description);
 
-            $image_upload_detected = isset($_FILES['image']) && ($_FILES['image']['error'] === 0);
-
-            if ($image_upload_detected) { 
+            //  If an image was uploaded.
+            if($image_upload_detected) { 
                 $image_filename       = $_FILES['image']['name'];
                 $temporary_image_path = $_FILES['image']['tmp_name'];
                 $new_image_path       = file_upload_path($image_filename);
-                if (file_is_an_image($temporary_image_path, $new_image_path)) {
+
+                //  If this file was an image, upload it and bind the value to the parameter.
+                if(file_is_an_image($temporary_image_path, $new_image_path)) {
                     upload_files($temporary_image_path, $new_image_path);
                     $statement->bindValue(":coverURL", $image_filename);
                 }
-                else {
+                //  Otherwise bind NULL to the parameter.
+                else{
                     $statement->bindValue(":coverURL", NULL);
                 }
             }
-            else {
-                $statement->bindValue(":coverURL", NULL);
-            }
-        }  
+        }
+
+        //  If the command was not to Create, bind the GET album id to the parameter.
         if($_POST['command'] != "Create"){
             $statement->bindValue(":albumID", $_GET['albumID'], PDO::PARAM_INT);
         }
+        //  If the command was to Create, bind the user id to the parameter.
         else{
             $statement->bindValue(":postedBy", 1); // CHANGE LATER
         }
@@ -160,9 +205,14 @@
         if($statement->execute()){
             $valid = true;
             
+            //  If the command was to create, associate genres with the recently added album.
             if($_POST['command'] == "Create"){
                 $albumID =  getMostRecent($db);
                 addGenres($albumID, $db);
+            }
+            //  If the command was to Update, associate genres with the album from the GET album id.
+            elseif($_POST['command'] == "Update"){
+                addGenres($_GET['albumID'], $db);
             }
 
             header("Location: index.php");
