@@ -57,7 +57,9 @@
                 <h4 class="card-title"><?= $album['title'] ?></h4>
                 <small><a href="edit.php?albumID=<?= $id ?>">Edit</a></small>
                 <h6 class="card-subtitle mb-2 text-muted"><?= $album['artist'] ?> - <?= $album['year'] == NULL ? "[unknown year]" : $album['year'] ?></h6>
-                <img src="uploads/medium_<?= $album['coverURL'] ?>" alt="<?= $album['title'] ?> cover" />
+                <?php if($album['coverURL'] != NULL): ?>
+                    <img src="uploads/medium_<?= $album['coverURL'] ?>" alt="<?= $album['title'] ?> cover.">
+                <?php endif ?>
                 <hr />
                 <?php if (count($genres) > 0): ?>
                     <h6 class="card-subtitle mb-2">Genres:</h6>

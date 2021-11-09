@@ -69,6 +69,16 @@
     $valid = false;
     
     if ($_POST && $_POST['command'] == "Remove Image"){
+        $query = "SELECT coverURL FROM albums WHERE albumID = :albumID";
+        $statement = $db->prepare($query);
+        $statement->bindValue(":albumID", $_GET['albumID'], PDO::PARAM_INT);
+        $statement->execute();
+        $image = $statement->fetch()['coverURL'];
+
+        unlink("uploads/".$image);
+        unlink("uploads/medium_".$image);
+        unlink("uploads/thumbnail_".$image);
+
         $query = "UPDATE albums SET coverURL = NULL, updated = current_timestamp() WHERE albumID = :albumID";
         $statement = $db->prepare($query);
         $statement->bindValue(":albumID", $_GET['albumID'], PDO::PARAM_INT);

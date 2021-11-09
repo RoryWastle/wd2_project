@@ -31,7 +31,9 @@
 		<?php while ($row = $statement->fetch()): ?>
 			<div class="card">
 				<div class="card-body">
-					<img src="uploads/thumbnail_<?= $row['coverURL'] ?>" alt="" />
+					<?php if($row['coverURL'] != NULL): ?>
+						<img src="uploads/thumbnail_<?= $row['coverURL'] ?>" alt="<?= $row['title'] ?> cover.">
+					<?php endif ?>
 					<h4 class="card-title"><a href="show.php?album=<?= $row['albumID'] ?>"><?= $row['title'] ?></a></h4>
 					<h6 class="card-subtitle mb-2 text-muted"><?= $row['artist'] ?> - <?= $row['year'] ?></h6>
 					<p><?= $row['likes'] ?> people like this album</p>
