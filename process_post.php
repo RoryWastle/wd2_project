@@ -114,7 +114,7 @@
         $title  = filter_input(INPUT_POST, 'title', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
         $artist = filter_input(INPUT_POST, 'artist', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-        //  If the year is unsanitary, set it to null.
+        //  Sanitize the year if one was entered.
         $year = !empty($_POST['year']) ? filter_input(INPUT_POST, 'year', FILTER_SANITIZE_NUMBER_INT) : NULL;
 
         //  If the year is not numeric or is not four digits, set the value to null.
@@ -127,8 +127,9 @@
             $year = NULL;
         }
 
-        //  If the description is unsanitary, set it to null.
-        $description = !empty($_POST['description']) ? filter_input(INPUT_POST, 'description', FILTER_SANITIZE_FULL_SPECIAL_CHARS) : NULL;
+        //  Sanitize the description if one was entered. Allow certain tags because of the WYSIWYG.
+        $allowedTags = '<p><blockquote><div><pre><strong><em><ol><ul><li><code><h1><h2><h3><h4><h5><h6><span><del><sup><sub>';
+        $description = !empty($_POST['description']) ? strip_tags(stripslashes($_POST['description']),$allowedTags) : NULL;
 
         //  See if an image upload is detected.
         $image_upload_detected = isset($_FILES['image']) && ($_FILES['image']['error'] === 0);
@@ -215,7 +216,7 @@
                 addGenres($_GET['albumID'], $db);
             }
 
-            header("Location: index.php");
+            header("Location: show.php?albumID=".$_GET['albumID']);
             exit;
         }
 
