@@ -20,8 +20,6 @@
     $statement = $db->prepare($query); // Returns a PDOStatement object.
     $statement->execute(); // The query is now executed.
 
-    $users = $statement->fetchall();
-
     $valid = false;
 
     $id = -1;
@@ -31,8 +29,8 @@
     		$username = filter_input(INPUT_POST, 'userlogin', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     		$password = filter_input(INPUT_POST, 'passlogin', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-    		foreach ($users as $user) {
-	    		if ($user['name'] == $username) {
+    		while (!$valid && $user = $statement->fetch()) {
+    		 	if ($user['name'] == $username) {
 	    			if ($user['password'] == $password) {
 	    				$valid = true;
 	    				$id = $user['userID'];
@@ -49,7 +47,7 @@
 
     		$taken = false;
 
-    		foreach ($users as $user){
+    		while (!$taken && $user = $statement->fetch()) {
     			if ($user['name'] == $username) {
     				$taken = true;
     			}
@@ -88,7 +86,7 @@
 	<title>Winnipeg's Classic Albums | Login or Register</title>
 
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="stylesheet" type="text/css" href="style.css">
     <!--script src="register.js"></script-->
 </head>
 <body>

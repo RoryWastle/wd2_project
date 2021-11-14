@@ -18,8 +18,7 @@
     $statement = $db->prepare($query); // Returns a PDOStatement object.
     $statement->bindvalue(":id", $_SESSION['user'], PDO::PARAM_INT);
     $statement->execute(); // The query is now executed.
-
-    $currentuser = $statement->fetch();
+    $user = $statement->fetch();
 
     if ($_POST && $_POST['command'] == 'Logout'){
     	$_SESSION = [];
@@ -73,13 +72,13 @@
 	<title>Winnipeg's Classic Albums | Account Profile</title>
 
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
 	<?php include('header.php'); ?>
 
 	<div class="container">
-		<h1 class="pt-3">Account Profile: <?= $currentuser['name'] ?></h1>
+		<h1 class="pt-3">Account Profile: <?= $user['name'] ?></h1>
 
 		<form action="account.php" method="post" class="form-inline">
             <div class="form-group p-3">

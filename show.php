@@ -25,7 +25,7 @@
         $statement->bindValue(':id', $album['postedBy'], PDO::PARAM_INT);
         $statement->execute();
 
-        $user = $statement->fetch();
+        $poster = $statement->fetch();
 
         $query = "SELECT g.genre FROM genres g JOIN albumgenre a ON g.genreID = a.genreID WHERE a.albumID = :id";
         $statement = $db->prepare($query);
@@ -47,7 +47,7 @@
     <title>Winnipeg's Classic Ablums | <?= $album['title'] ?></title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="stylesheet" type="text/css" href="style.css">
 </head>
 <body>
     <?php include('header.php'); ?>
@@ -58,7 +58,9 @@
         <div class="card" id="album-summary">
             <div class="card-body">
                 <h4 class="card-title"><?= $album['title'] ?></h4>
-                <small><a href="edit.php?albumID=<?= $id ?>">Edit</a></small>
+                <?php if (isset($_SESSION['user'])): ?>
+                    <small><a href="edit.php?albumID=<?= $id ?>">Edit</a></small>
+                <?php endif ?>
                 <h6 class="card-subtitle mb-2 text-muted"><?= $album['artist'] ?> - <?= $album['year'] == NULL ? "[unknown year]" : $album['year'] ?></h6>
                 <?php if($album['coverURL'] != NULL): ?>
                     <img src="uploads/medium_<?= $album['coverURL'] ?>" alt="<?= $album['title'] ?> cover.">
@@ -81,7 +83,7 @@
         </div>
         
         <div id="end-of-summary">
-            <p>Posted by <?= $user['name'] == NULL ? "[unknown]" : $user['name'] ?>. Last updated <?= $album['updated'] ?></p>
+            <p>Posted by <?= $poster['name'] == NULL ? "[unknown]" : $poster['name'] ?>. Last updated <?= $album['updated'] ?></p>
         </div>
     </div>
 
