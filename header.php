@@ -5,6 +5,17 @@
  * Purpose: Navigation of a website for a database of albums.
  * ************************************************************/
 
+    $user = "";
+
+    if (isset($_SESSION['user'])) {
+        $query = "SELECT name FROM users WHERE userID = :id";
+        $statement = $db->prepare($query); // Returns a PDOStatement object.
+        $statement->bindvalue(":id", $_SESSION['user'], PDO::PARAM_INT);
+        $statement->execute(); // The query is now executed.
+
+        $user = $statement->fetch()['name'];
+    }
+
 ?>
 <nav class="navbar navbar-expand-lg navbar-light bg-light p-3">
 
@@ -26,5 +37,10 @@
             </li>
         </ul>
     </div>
-    <p class="text-right"><a href="register.php">Login or Register</a></p>
+
+    <?php if(isset($_SESSION['user'])): ?>
+        <p class="text-right">Hello, <a href="account.php"><?= $user ?></a>!</p>
+    <?php else: ?>
+        <p class="text-right"><a href="register.php">Login or Register</a></p>
+    <?php endif ?>
 </nav>

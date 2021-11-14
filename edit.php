@@ -4,6 +4,8 @@
      * Date:    November 2, 2021
      * Purpose: To edit or delete a new album in the database.
      **********************************************************************/
+    
+    session_start();
 
     require('db_connect.php');
     //require('authenticate.php');

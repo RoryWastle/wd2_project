@@ -4,6 +4,9 @@
      * Date:    November 3, 2021
      * Purpose: To show a certain album in the database.
      **********************************************************************/
+    
+    session_start();
+
     require('db_connect.php');
 
     if(isset($_GET['album'])){
@@ -78,7 +81,7 @@
         </div>
         
         <div id="end-of-summary">
-            <p>Posted by <?= $user['name'] ?>. Last updated <?= $album['updated'] ?></p>
+            <p>Posted by <?= $user['name'] == NULL ? "[unknown]" : $user['name'] ?>. Last updated <?= $album['updated'] ?></p>
         </div>
     </div>
 

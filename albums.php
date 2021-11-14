@@ -4,6 +4,8 @@
  * Date: 	October 28 2021
  * Purpose: List of albums for a website for a database of albums.
  * ************************************************************/
+    
+    session_start();
 
 	require('db_connect.php');
 
