@@ -69,6 +69,7 @@
                 </div>
             <?php else: ?>
                 <div class="form-group p-3">
+                    <img src="uploads/thumbnail_<?= $album['coverURL'] ?>" alt="<?= $album['title'] ?> cover." />
                     <input  
                         class="btn btn-danger" 
                         type="submit" 
@@ -78,7 +79,7 @@
                     />
                 </div>
             <?php endif ?>
-            <div class="form-group p-3">
+            <div class="form-group p-3 clearfix">
                 <label for="year">Year</label>
                 <input class="form-control mb-2" name="year" id="year" value="<?= $album['year'] ?>" />
             </div>
@@ -125,7 +126,7 @@
             </div>
             <div class="form-group p-3">
                 <input class="btn btn-primary" type="submit" name="command" value="Update" />
-                <input class="btn btn-danger" type="submit" name="command" value="Delete" onclick="return confirm('Are you sure you wish to delete this post?')" />
+                <input class="btn btn-danger" type="submit" name="command" value="Delete" onclick="return confirm('Are you sure you wish to delete this album?')" />
             </div>
         </form>
     </div>

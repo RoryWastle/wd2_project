@@ -19,7 +19,7 @@
 ?>
 <nav class="navbar navbar-expand-lg navbar-light bg-light p-3">
 
-    <h1><a class="navbar-brand" href="index.php">Winnipeg's Classic Albums</a></h1>
+    <h1 class="navbar-brand">Winnipeg's Classic Albums</h1>
     
     <div class="navbar-collapse">
         <ul class="navbar-nav mr-auto">

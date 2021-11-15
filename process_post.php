@@ -5,6 +5,16 @@
      * Purpose: To create a new record in the classic albums database.
      **********************************************************************/
 
+    //  Gets the user posting the album.
+    function getUser($db){
+        $query = "SELECT name FROM users WHERE userID = :id";
+        $statement = $db->prepare($query);
+        $statement->bindValue(":id", $_SESSION['user'], PDO::PARAM_INT);
+        $statement->execute();
+        $row = $statement->fetch();
+        return $row['name'];
+    }
+
     //  Gets the most recent album added.
     function getMostRecent($db){
         $query = "SELECT MAX(albumID) AS latest FROM albums";
@@ -59,9 +69,7 @@
     }
 
     //  Upload three sizes of the same image to the uploads folder.
-    function upload_files($temporary_path, $new_path) {
-        $image_filename = $_FILES['image']['name'];
-
+    function upload_files($temporary_path, $new_path, $image_filename) {
         $image = new \Gumlet\ImageResize($temporary_path);
         $image->resizeToWidth(75);
         $image->save(file_upload_path('thumbnail_' . $image_filename));
@@ -72,6 +80,15 @@
 
         move_uploaded_file($temporary_path, $new_path);
     }
+
+    //  Delete the three images from the file system.
+    function delete_files($image) {
+        unlink("uploads/".$image);
+        unlink("uploads/medium_".$image);
+        unlink("uploads/thumbnail_".$image);
+    }
+
+    session_start();
 
     //  Required files.
     require('db_connect.php');
@@ -90,9 +107,7 @@
         $image = $statement->fetch()['coverURL'];
 
         //  Remove the three imaged associated with the url.
-        unlink("uploads/".$image);
-        unlink("uploads/medium_".$image);
-        unlink("uploads/thumbnail_".$image);
+        delete_files($image);
 
         //  Set the cover url value in for this album to null.
         $query = "UPDATE albums SET coverURL = NULL, updated = current_timestamp() WHERE albumID = :albumID";
@@ -129,7 +144,7 @@
 
         //  Sanitize the description if one was entered. Allow certain tags because of the WYSIWYG.
         $allowedTags = '<p><blockquote><div><pre><strong><em><ol><ul><li><code><h1><h2><h3><h4><h5><h6><span><del><sup><sub>';
-        $description = !empty($_POST['description']) ? strip_tags(stripslashes($_POST['description']),$allowedTags) : NULL;
+        $description = !empty($_POST['description']) ? strip_tags(stripslashes($_POST['description']), $allowedTags) : NULL;
 
         //  See if an image upload is detected.
         $image_upload_detected = isset($_FILES['image']) && ($_FILES['image']['error'] === 0);
@@ -150,10 +165,10 @@
             //  Build the query based on if an image was uploaded.
             if($image_upload_detected) { 
                 //  Build the parameterized SQL query and bind to the above sanitized values.
-                $query = "UPDATE albums SET title = :title, artist = :artist, year = :year, coverURL = :coverURL, description = :description, updated = current_timestamp() WHERE albumID = :albumID";
+                $query = "UPDATE albums SET title = :title, artist = :artist, year = :year, coverURL = :coverURL, description = :description, postedBy = :postedBy, updated = current_timestamp() WHERE albumID = :albumID";
             }
             else{
-                $query = "UPDATE albums SET title = :title, artist = :artist, year = :year, description = :description, updated = current_timestamp() WHERE albumID = :albumID";
+                $query = "UPDATE albums SET title = :title, artist = :artist, year = :year, description = :description, postedBy = :postedBy, updated = current_timestamp() WHERE albumID = :albumID";
             }
 
             //  Remove any genres associated with this album.
@@ -161,6 +176,16 @@
         }
         //  If the command was to delete.
         else{
+            //  Remove the associated images from the file system.
+            $query = "SELECT coverURL FROM albums WHERE albumID = :albumID";
+            $statement = $db->prepare($query);
+            $statement->bindValue(":albumID", $_GET['albumID'], PDO::PARAM_INT);
+            $statement->execute();
+            $image = $statement->fetch()['coverURL'];
+
+            delete_files($image);
+
+            //  Build the Delete query.
             $query = "DELETE FROM albums WHERE albumID = :albumID";
         }
 
@@ -173,16 +198,17 @@
             $statement->bindValue(":artist", $artist);
             $statement->bindValue(":year", $year, PDO::PARAM_INT);
             $statement->bindValue(":description", $description);
+            $statement->bindValue(":postedBy", $_SESSION['user']);
 
             //  If an image was uploaded.
             if($image_upload_detected) { 
-                $image_filename       = $_FILES['image']['name'];
+                $image_filename       = $_SESSION['user'] . '-' . time() . '-' . $_FILES['image']['name'];
                 $temporary_image_path = $_FILES['image']['tmp_name'];
                 $new_image_path       = file_upload_path($image_filename);
 
                 //  If this file was an image, upload it and bind the value to the parameter.
                 if(file_is_an_image($temporary_image_path, $new_image_path)) {
-                    upload_files($temporary_image_path, $new_image_path);
+                    upload_files($temporary_image_path, $new_image_path, $image_filename);
                     $statement->bindValue(":coverURL", $image_filename);
                 }
                 //  Otherwise bind NULL to the parameter.
@@ -195,10 +221,6 @@
         //  If the command was not to Create, bind the GET album id to the parameter.
         if($_POST['command'] != "Create"){
             $statement->bindValue(":albumID", $_GET['albumID'], PDO::PARAM_INT);
-        }
-        //  If the command was to Create, bind the user id to the parameter.
-        else{
-            $statement->bindValue(":postedBy", 1); // CHANGE LATER
         }
 
         //  Execute the command.

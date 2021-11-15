@@ -57,10 +57,13 @@
 
         <div class="card" id="album-summary">
             <div class="card-body">
-                <h4 class="card-title"><?= $album['title'] ?></h4>
-                <?php if (isset($_SESSION['user'])): ?>
-                    <small><a href="edit.php?albumID=<?= $id ?>">Edit</a></small>
-                <?php endif ?>
+                <h4 class="card-title">
+                    <?= $album['title'] ?>
+                        <?php if (isset($_SESSION['user'])): ?>
+                        <small> - <a href="edit.php?albumID=<?= $id ?>">Edit</a></small>
+                    <?php endif ?>   
+                </h4>
+                
                 <h6 class="card-subtitle mb-2 text-muted"><?= $album['artist'] ?> - <?= $album['year'] == NULL ? "[unknown year]" : $album['year'] ?></h6>
                 <?php if($album['coverURL'] != NULL): ?>
                     <img src="uploads/medium_<?= $album['coverURL'] ?>" alt="<?= $album['title'] ?> cover.">
@@ -75,7 +78,9 @@
                     </ul>
                 <?php endif ?>
                 <p><?= $album['likes'] ?> people like this album</p>
-                <button class="btn btn-primary">Like</button>
+                <?php if(isset($_SESSION['user'])): ?>
+                    <button class="btn btn-primary">Like</button>
+                <?php endif ?>
             </div>
         </div>
         <div class="p-3">
@@ -83,7 +88,7 @@
         </div>
         
         <div id="end-of-summary">
-            <p>Posted by <?= $poster['name'] == NULL ? "[unknown]" : $poster['name'] ?>. Last updated <?= $album['updated'] ?></p>
+            <p>Last updated by <?= $poster['name'] == NULL ? "[unknown]" : $poster['name'] ?> on <?= $album['updated'] ?></p>
         </div>
     </div>
 
