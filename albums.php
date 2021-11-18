@@ -9,7 +9,7 @@
 
 	require('db_connect.php');
 
-	$query = "SELECT * FROM albums";
+	$query = "SELECT * FROM albums ORDER BY title";
     $statement = $db->prepare($query); // Returns a PDOStatement object.
     $statement->execute(); // The query is now executed.
     $albums = $statement->fetchall();
@@ -30,6 +30,12 @@
 
 	<div class="container">
 		<h1 class="pt-3">Albums</h1>
+
+		<form class="input-group" action="albums.php" method="post">
+			<label for="genre"></label>
+            <input class="form-control" name="genre" id="genre">
+            <input class="btn btn-primary" type="submit" name="command" value="Add">
+        </form>
 
 		<?php foreach ($albums as $album): ?>
 			<div class="card">

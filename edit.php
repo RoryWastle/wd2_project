@@ -20,7 +20,7 @@
         $statement->execute();
         $album = $statement->fetch();
 
-        $query = "SELECT * FROM genres";
+        $query = "SELECT * FROM genres ORDER BY genre";
         $statement = $db->prepare($query);
         $statement->execute();
         $genres = $statement->fetchAll();

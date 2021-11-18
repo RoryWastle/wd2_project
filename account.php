@@ -55,9 +55,14 @@
     		$statement->bindvalue(":id", $_SESSION['user']);
     		$statement->execute();
 
-			if (isset($_SESSION['takenUsername'])) {
-				unset($_SESSION['takenUsername']);
-			}
+    		if ($statement->execute()) {
+    			if (isset($_SESSION['takenUsername'])) {
+					unset($_SESSION['takenUsername']);
+				}
+
+	            header("Location: account.php");
+	            exit;
+	        }
 		}
     }
     //  If a post happened and the command was to change the password and the password spaces are not blank.
@@ -72,7 +77,11 @@
     		$statement = $db->prepare($query);
     		$statement->bindvalue(":password", password_hash($password1, PASSWORD_DEFAULT));
     		$statement->bindvalue(":id", $_SESSION['user']);
-    		$statement->execute();
+
+    		if ($statement->execute()) {
+	            header("Location: account.php");
+	            exit;
+	        }
     	}
     }
     //  If there was not a post and the session for the taken username is set, unset it.

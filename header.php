@@ -31,7 +31,10 @@
             </li>
             <?php if(isset($_SESSION['user'])): ?>
                 <li class="nav-item">
-                    <a class="nav-link" href="create.php">Add</a>
+                    <a class="nav-link" href="create.php">Add Album</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="genres.php">Genres</a>
                 </li>
             <?php endif ?>
         </ul>

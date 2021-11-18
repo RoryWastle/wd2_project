@@ -10,7 +10,7 @@
     require('db_connect.php');
     //require('authenticate.php');
 
-    $query = "SELECT * FROM genres";
+    $query = "SELECT * FROM genres ORDER BY genre";
     $statement = $db->prepare($query); // Returns a PDOStatement object.
     $statement->execute(); // The query is now executed.
     $genres = $statement->fetchAll();
