@@ -9,9 +9,31 @@
 
 	require('db_connect.php');
 
-	$query = "SELECT * FROM albums ORDER BY title";
-    $statement = $db->prepare($query); // Returns a PDOStatement object.
-    $statement->execute(); // The query is now executed.
+	$query = "SELECT * FROM genres ORDER BY genre";
+    $statement = $db->prepare($query);
+    $statement->execute();
+    $genres = $statement->fetchAll();
+
+    //  If a genre was specified.
+    if (isset($_GET['genre']) && $_GET['genre'] > 0) {
+    	//  Sanitize the genre parameter.
+    	$selected = filter_input(INPUT_GET, 'genre', FILTER_SANITIZE_NUMBER_INT);
+
+    	$query = "SELECT * FROM albums a JOIN albumgenre g ON a.albumID = g.albumID WHERE g.genreID = :genreID ORDER BY title";
+	    $statement = $db->prepare($query); // Returns a PDOStatement object.
+	    $statement->bindvalue(":genreID", $selected);
+	    $statement->execute(); // The query is now executed.
+    }
+    elseif (isset($_GET['genre']) && $_GET['genre'] == 0) {
+    	header('Location: albums.php');
+    	exit();
+    }
+    else {
+    	$query = "SELECT * FROM albums ORDER BY title";
+    	$statement = $db->prepare($query); // Returns a PDOStatement object.
+    	$statement->execute(); // The query is now executed.
+    }
+
     $albums = $statement->fetchall();
 ?>
 
@@ -31,11 +53,17 @@
 	<div class="container">
 		<h1 class="pt-3">Albums</h1>
 
-		<form class="input-group" action="albums.php" method="post">
-			<label for="genre"></label>
-            <input class="form-control" name="genre" id="genre">
-            <input class="btn btn-primary" type="submit" name="command" value="Add">
+		<form class="input-group">
+			<select class="form-control" id="genre" name="genre">
+                <option value="0">No filter</option>
+                <?php foreach ($genres as $genre): ?>
+                    <option value=<?= $genre['genreID'] ?>><?= $genre['genre'] ?></option>
+                <?php endforeach ?>
+            </select>
+            <input class="btn btn-outline-primary" type="submit" value="Filter by Genre">
         </form>
+
+        <br />
 
 		<?php foreach ($albums as $album): ?>
 			<div class="card">

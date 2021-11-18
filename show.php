@@ -60,7 +60,7 @@
                 <h4 class="card-title">
                     <?= $album['title'] ?>
                         <?php if (isset($_SESSION['user'])): ?>
-                        <small> - <a href="edit.php?albumID=<?= $id ?>">Edit</a></small>
+                        <small><a href="edit.php?albumID=<?= $id ?>">[Edit]</a></small>
                     <?php endif ?>   
                 </h4>
                 
