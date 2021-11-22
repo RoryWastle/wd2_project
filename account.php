@@ -84,6 +84,11 @@
 	        }
     	}
     }
+    //  If there was a post and nothing was entered.
+    elseif ($_POST) {
+    	header("Location: account.php");
+	    exit;
+    }
     //  If there was not a post and the session for the taken username is set, unset it.
     elseif (!$_POST && isset($_SESSION['takenUsername'])) {
     	unset($_SESSION['takenUsername']);

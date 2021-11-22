@@ -14,7 +14,7 @@
         //  Sanitize the new genre.
         $newgenre = filter_input(INPUT_POST, 'newgenre', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-        //  Insert the new genre into the table.
+        //  Insert the new genre into the table.//  If the statement was executed, go back to the page.
         $query = "INSERT INTO genres (genre) VALUES (:newgenre)";
         $statement = $db->prepare($query);
         $statement->bindvalue(':newgenre', $newgenre);
@@ -24,6 +24,11 @@
             header("Location: genres.php");
             exit;
         }
+    }
+    //  If there was a post and no new genre was entered.
+    elseif ($_POST) {
+        header("Location: genres.php");
+        exit;
     }
 
     //  If a delete request for a certain album was made.
@@ -50,7 +55,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
-    <title>Winnipeg's Classic Albums | New Album</title>
+    <title>Winnipeg's Classic Albums | Genres</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <link rel="stylesheet" type="text/css" href="style.css">

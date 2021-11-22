@@ -9,15 +9,16 @@
 
     require('db_connect.php');
 
+    //  If an album parameter was provided.
     if(isset($_GET['album'])){
         $id = filter_input(INPUT_GET, 'album', FILTER_SANITIZE_NUMBER_INT);
 
-        //  If there was a post and the comment input is not blank/
+        //  If there was a post and the comment input is not blank.
         if ($_POST && $_POST['comment'] != NULL) {
-            //  Sanitize the new genre.
+            //  Sanitize the new comment.
             $comment = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-            //  Insert the new genre into the table.
+            //  Insert the new comment into the table.
             $query = "INSERT INTO comments (comment, albumID, userID) VALUES (:comment, :albumID, :userID)";
             $statement = $db->prepare($query);
             $statement->bindValue(':comment', $comment);
@@ -30,14 +31,20 @@
                 exit;
             }
         }
+        //  If there was a post and no comment was entered.
+        elseif ($_POST) {
+            header("Location: show.php?album={$_GET['album']}");
+            exit;
+        }
 
         //  If a delete request for a certain comment was made.
         if (isset($_GET['toDelete'])) {
-            //  Delete the requested genre from the table.
+            //  Delete the requested comment from the table.
             $query = "DELETE FROM comments WHERE commentID = :commentID";
             $statement = $db->prepare($query);
             $statement->bindvalue(':commentID', $_GET['toDelete']);
 
+            //  If the statement was executed, go back to the page.
             if ($statement->execute()) {
                 header("Location: show.php?album={$_GET['album']}");
                 exit;
@@ -52,6 +59,7 @@
 
         $album = $statement->fetch();
 
+        //  Select the name of the user that last updated this album.
         $query = "SELECT name FROM users WHERE userID = :id";
         $statement = $db->prepare($query);
         $statement->bindValue(':id', $album['postedBy'], PDO::PARAM_INT);
@@ -59,6 +67,7 @@
 
         $poster = $statement->fetch();
 
+        //  Select the genres associated with this album.
         $query = "SELECT g.genre FROM genres g JOIN albumgenre a ON g.genreID = a.genreID WHERE a.albumID = :id";
         $statement = $db->prepare($query);
         $statement->bindValue(':id', $id, PDO::PARAM_INT);
@@ -66,6 +75,7 @@
 
         $genres = $statement->fetchAll();
 
+        //  Select the comments associated with this album.
         $query = "SELECT c.commentID, c.comment, c.userID, u.name FROM comments c JOIN users u ON u.userID = c.userID WHERE albumID = :albumID ORDER BY commentID DESC";
         $statement = $db->prepare($query);
         $statement->bindValue(':albumID', $id, PDO::PARAM_INT);
@@ -73,9 +83,12 @@
 
         $comments = $statement->fetchAll();
 
+        //  Assume the current user is not an admin.
         $admin = false;
 
+        //  If the current user is logged in.
         if (isset($_SESSION['user'])) {
+            //  Select if this user is an admin.
             $query = "SELECT admin FROM users WHERE userID = :userID";
             $statement = $db->prepare($query);
             $statement->bindValue(':userID', $_SESSION['user'], PDO::PARAM_INT);

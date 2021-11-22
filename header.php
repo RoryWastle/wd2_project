@@ -8,12 +8,12 @@
     $currentuser = "";
 
     if (isset($_SESSION['user'])) {
-        $query = "SELECT name FROM users WHERE userID = :id";
+        $query = "SELECT name, admin FROM users WHERE userID = :id";
         $statement = $db->prepare($query); // Returns a PDOStatement object.
         $statement->bindvalue(":id", $_SESSION['user'], PDO::PARAM_INT);
         $statement->execute(); // The query is now executed.
 
-        $currentuser = $statement->fetch()['name'];
+        $currentuser = $statement->fetch();
     }
 
 ?>
@@ -36,6 +36,11 @@
                 <li class="nav-item">
                     <a class="nav-link" href="genres.php">Genres</a>
                 </li>
+                <?php if($currentuser['admin']): ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="users.php">Users</a>
+                    </li>
+                <?php endif ?>
             <?php endif ?>
         </ul>
     </div>
@@ -46,7 +51,7 @@
     </form>
 
     <?php if(isset($_SESSION['user'])): ?>
-        <p class="text-right">Hello, <a href="account.php"><?= $currentuser ?></a>!</p>
+        <p class="text-right">Hello, <a href="account.php"><?= $currentuser['name'] ?></a>!</p>
     <?php else: ?>
         <p class="text-right"><a href="register.php">Login or Register</a></p>
     <?php endif ?>
