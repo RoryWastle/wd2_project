@@ -188,7 +188,7 @@
                 <input type="password" class="form-control" name="newpass1" id="newpass1" />
             </div>
             <div class="form-group p-3">
-            	<p class="text-danger" id="pass-error">The passwords to not match.</p>
+            	<p class="text-danger" id="pass-error">The passwords do not match.</p>
                 <label for="newpass2">Confirm Password</label>
                 <input type="password" class="form-control" name="newpass2" id="newpass2" />
             </div>

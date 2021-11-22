@@ -12,6 +12,38 @@
     if(isset($_GET['album'])){
         $id = filter_input(INPUT_GET, 'album', FILTER_SANITIZE_NUMBER_INT);
 
+        //  If there was a post and the comment input is not blank/
+        if ($_POST && $_POST['comment'] != NULL) {
+            //  Sanitize the new genre.
+            $comment = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+            //  Insert the new genre into the table.
+            $query = "INSERT INTO comments (comment, albumID, userID) VALUES (:comment, :albumID, :userID)";
+            $statement = $db->prepare($query);
+            $statement->bindValue(':comment', $comment);
+            $statement->bindValue(':albumID', $id, PDO::PARAM_INT);
+            $statement->bindValue(':userID', $_SESSION['user'], PDO::PARAM_INT);
+            
+            //  If the statement was executed, go back to the page.
+            if ($statement->execute()) {
+                header("Location: show.php?album={$_GET['album']}");
+                exit;
+            }
+        }
+
+        //  If a delete request for a certain comment was made.
+        if (isset($_GET['toDelete'])) {
+            //  Delete the requested genre from the table.
+            $query = "DELETE FROM comments WHERE commentID = :commentID";
+            $statement = $db->prepare($query);
+            $statement->bindvalue(':commentID', $_GET['toDelete']);
+
+            if ($statement->execute()) {
+                header("Location: show.php?album={$_GET['album']}");
+                exit;
+            }
+        }
+
         //  Select the album.
         $query = "SELECT * FROM albums WHERE albumID = :id";
         $statement = $db->prepare($query);
@@ -33,6 +65,24 @@
         $statement->execute();
 
         $genres = $statement->fetchAll();
+
+        $query = "SELECT c.commentID, c.comment, c.userID, u.name FROM comments c JOIN users u ON u.userID = c.userID WHERE albumID = :albumID ORDER BY commentID DESC";
+        $statement = $db->prepare($query);
+        $statement->bindValue(':albumID', $id, PDO::PARAM_INT);
+        $statement->execute();
+
+        $comments = $statement->fetchAll();
+
+        $admin = false;
+
+        if (isset($_SESSION['user'])) {
+            $query = "SELECT admin FROM users WHERE userID = :userID";
+            $statement = $db->prepare($query);
+            $statement->bindValue(':userID', $_SESSION['user'], PDO::PARAM_INT);
+            $statement->execute();
+
+            $admin = $statement->fetch()['admin'];
+        }
     } else {
         header("Location: index.php");
         exit;
@@ -89,6 +139,33 @@
         
         <div id="end-of-summary">
             <p>Last updated by <?= $poster['name'] == NULL ? "[unknown]" : $poster['name'] ?> on <?= $album['updated'] ?></p>
+        </div>
+
+        <hr />
+
+        <div class="p-3">
+            <h3>Comments</h3>
+
+            <?php if(isset($_SESSION['user'])): ?>
+                <form action="show.php?album=<?= $_GET['album'] ?>" method="post">
+                    <label for="comment"></label>
+                    <textarea class="form-control" name="comment" id="comment"></textarea>
+                    <input type="submit" name="command" value="Post" class="btn btn-primary">
+                </form>
+                <br />
+            <?php endif ?>
+
+            <?php foreach ($comments as $comment): ?>
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title"><?= $comment['name'] ?></a></h4>
+                        <p><?= $comment['comment'] ?></p>
+                        <?php if($admin || (isset($_SESSION['user']) && $comment['userID'] == $_SESSION['user'])): ?>
+                            <p><a href="?album=<?= $_GET['album'] ?>&toDelete=<?= $comment['commentID'] ?>">Delete Comment</a></p>
+                        <?php endif ?>
+                    </div>
+                </div>
+            <?php endforeach ?>
         </div>
     </div>
 
