@@ -139,6 +139,7 @@
                 <input class="btn btn-primary" type="submit" name="command" value="Change Username" />
             </div>
         </form>
+
         <form action="account.php" method="post" class="form-inline">
             <div class="form-group p-3">
                 <label for="passlogin">New Password</label>

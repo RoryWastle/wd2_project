@@ -45,9 +45,9 @@
         </ul>
     </div>
 
-    <form class="input-group mx-5" action="search.php" method="post">
+    <form class="input-group mx-5" action="search.php">
         <input class="form-control" name="search" id="search" placeholder="Search albums...">
-        <input class="btn btn-outline-primary" type="submit" name="command" value="Search">
+        <input class="btn btn-outline-primary" type="submit" value="Search">
     </form>
 
     <?php if(isset($_SESSION['user'])): ?>

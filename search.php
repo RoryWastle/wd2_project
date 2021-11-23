@@ -14,25 +14,25 @@
     $statement->execute();
     $genres = $statement->fetchAll();
 
-    $tosearch = filter_input(INPUT_POST, 'search', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $tosearch = filter_input(INPUT_GET, 'search', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
     $keyword  = strtolower($tosearch);
+
+    $selectedGenre = "";
 
     //  If a genre was specified.
     if (isset($_GET['genre']) && $_GET['genre'] > 0) {
     	//  Sanitize the genre parameter.
-    	$selected = filter_input(INPUT_GET, 'genre', FILTER_SANITIZE_NUMBER_INT);
+    	$selectedGenre = filter_input(INPUT_GET, 'genre', FILTER_SANITIZE_NUMBER_INT);
 
     	$query = "SELECT * FROM albums a JOIN albumgenre g ON a.albumID = g.albumID" 
-    			."WHERE g.genreID = :genreID AND LOWER(a.title) LIKE %:keyword% OR LOWER(a.artist) LIKE %:keyword% ORDER BY title";
+    			."WHERE g.genreID = :genreID AND LOWER(a.title) LIKE '%{$keyword}%' OR LOWER(a.artist) LIKE '%{$keyword}%' ORDER BY title";
 	    $statement = $db->prepare($query); // Returns a PDOStatement object.
-	    $statement->bindvalue(":genreID", $selected);
-	    $statement->bindvalue(":keyword", $keyword);
+	    $statement->bindvalue(":genreID", $selectedGenre);
 	    $statement->execute(); // The query is now executed.
     }
     else {
-    	$query = "SELECT * FROM albums WHERE LOWER(title) LIKE '%:keyword%' OR LOWER(artist) LIKE '%:keyword%' ORDER BY title";
+    	$query = "SELECT * FROM albums WHERE LOWER(title) LIKE '%{$keyword}%' OR LOWER(artist) LIKE '%{$keyword}%' ORDER BY title";
     	$statement = $db->prepare($query); // Returns a PDOStatement object.
-	    $statement->bindvalue(":keyword", $keyword);
     	$statement->execute(); // The query is now executed.
     }
 
@@ -56,11 +56,19 @@
 		<h1 class="pt-3">Search</h1>
 		<h4 class="pt-3"><?= count($albums) ?> results for "<?= $tosearch ?>"</h4>
 
-		<form class="input-group">
+		<form class="input-group" action="search.php">
+			<input type="hidden" name="search" value="<?= $tosearch ?>">
 			<select class="form-control" id="genre" name="genre">
                 <option value="0">No filter</option>
                 <?php foreach ($genres as $genre): ?>
-                    <option value=<?= $genre['genreID'] ?>><?= $genre['genre'] ?></option>
+                    <option value="0">All genres</option>
+	                <?php foreach ($genres as $genre): ?>
+	                	<option 
+	                        value=<?= $genre['genreID'] ?> 
+	                        <?php if(isset($_GET['genre']) && $genre['genreID'] == $selectedGenre): ?> selected <?php endif ?> >
+	                        <?= $genre['genre'] ?>
+	                            </option>
+	                <?php endforeach ?>
                 <?php endforeach ?>
             </select>
             <input class="btn btn-outline-primary" type="submit" value="Filter by Genre">

@@ -14,14 +14,16 @@
     $statement->execute();
     $genres = $statement->fetchAll();
 
+    $selectedGenre = "";
+
     //  If a genre was specified.
     if (isset($_GET['genre']) && $_GET['genre'] > 0) {
     	//  Sanitize the genre parameter.
-    	$selected = filter_input(INPUT_GET, 'genre', FILTER_SANITIZE_NUMBER_INT);
+    	$selectedGenre = filter_input(INPUT_GET, 'genre', FILTER_SANITIZE_NUMBER_INT);
 
     	$query = "SELECT * FROM albums a JOIN albumgenre g ON a.albumID = g.albumID WHERE g.genreID = :genreID ORDER BY title";
 	    $statement = $db->prepare($query); // Returns a PDOStatement object.
-	    $statement->bindvalue(":genreID", $selected);
+	    $statement->bindvalue(":genreID", $selectedGenre);
 	    $statement->execute(); // The query is now executed.
     }
     else {
@@ -51,9 +53,13 @@
 
 		<form class="input-group">
 			<select class="form-control" id="genre" name="genre">
-                <option value="0">No filter</option>
+                <option value="0">All genres</option>
                 <?php foreach ($genres as $genre): ?>
-                    <option value=<?= $genre['genreID'] ?>><?= $genre['genre'] ?></option>
+                	<option 
+                        value=<?= $genre['genreID'] ?> 
+                        <?php if(isset($_GET['genre']) && $genre['genreID'] == $selectedGenre): ?> selected <?php endif ?> >
+                        <?= $genre['genre'] ?>
+                            </option>
                 <?php endforeach ?>
             </select>
             <input class="btn btn-outline-primary" type="submit" value="Filter by Genre">
