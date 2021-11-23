@@ -24,10 +24,9 @@
     	//  Sanitize the genre parameter.
     	$selectedGenre = filter_input(INPUT_GET, 'genre', FILTER_SANITIZE_NUMBER_INT);
 
-    	$query = "SELECT * FROM albums a JOIN albumgenre g ON a.albumID = g.albumID" 
-    			."WHERE g.genreID = :genreID AND LOWER(a.title) LIKE '%{$keyword}%' OR LOWER(a.artist) LIKE '%{$keyword}%' ORDER BY title";
+    	$query = "SELECT * FROM albums a WHERE a.albumID IN (SELECT g.albumID FROM albumgenre g WHERE g.genreID = :genreID) AND (LOWER(a.title) LIKE '%{$keyword}%' OR LOWER(a.artist) LIKE '%{$keyword}%') ORDER BY a.title";
 	    $statement = $db->prepare($query); // Returns a PDOStatement object.
-	    $statement->bindvalue(":genreID", $selectedGenre);
+	    $statement->bindvalue(":genreID", $selectedGenre, PDO::PARAM_INT);
 	    $statement->execute(); // The query is now executed.
     }
     else {
@@ -54,21 +53,18 @@
 
 	<div class="container">
 		<h1 class="pt-3">Search</h1>
-		<h4 class="pt-3"><?= count($albums) ?> results for "<?= $tosearch ?>"</h4>
+		<h6 class="pt-3"><?= count($albums) ?> results for "<?= $tosearch ?>"</h6>
 
 		<form class="input-group" action="search.php">
 			<input type="hidden" name="search" value="<?= $tosearch ?>">
 			<select class="form-control" id="genre" name="genre">
-                <option value="0">No filter</option>
+                <option value="0">All genres</option>
                 <?php foreach ($genres as $genre): ?>
-                    <option value="0">All genres</option>
-	                <?php foreach ($genres as $genre): ?>
-	                	<option 
-	                        value=<?= $genre['genreID'] ?> 
-	                        <?php if(isset($_GET['genre']) && $genre['genreID'] == $selectedGenre): ?> selected <?php endif ?> >
-	                        <?= $genre['genre'] ?>
-	                            </option>
-	                <?php endforeach ?>
+                	<option 
+                        value=<?= $genre['genreID'] ?> 
+                        <?php if(isset($_GET['genre']) && $genre['genreID'] == $selectedGenre): ?> selected <?php endif ?> >
+                        <?= $genre['genre'] ?>
+                    </option>
                 <?php endforeach ?>
             </select>
             <input class="btn btn-outline-primary" type="submit" value="Filter by Genre">

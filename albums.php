@@ -21,7 +21,7 @@
     	//  Sanitize the genre parameter.
     	$selectedGenre = filter_input(INPUT_GET, 'genre', FILTER_SANITIZE_NUMBER_INT);
 
-    	$query = "SELECT * FROM albums a JOIN albumgenre g ON a.albumID = g.albumID WHERE g.genreID = :genreID ORDER BY title";
+    	$query = "SELECT * FROM albums a WHERE a.albumID IN (SELECT g.albumID FROM albumgenre g WHERE g.genreID = :genreID) ORDER BY a.title";
 	    $statement = $db->prepare($query); // Returns a PDOStatement object.
 	    $statement->bindvalue(":genreID", $selectedGenre);
 	    $statement->execute(); // The query is now executed.
@@ -59,7 +59,7 @@
                         value=<?= $genre['genreID'] ?> 
                         <?php if(isset($_GET['genre']) && $genre['genreID'] == $selectedGenre): ?> selected <?php endif ?> >
                         <?= $genre['genre'] ?>
-                            </option>
+                    </option>
                 <?php endforeach ?>
             </select>
             <input class="btn btn-outline-primary" type="submit" value="Filter by Genre">
