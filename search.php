@@ -14,7 +14,8 @@
     $statement->execute();
     $genres = $statement->fetchAll();
 
-    $keyword = filter_input(INPUT_POST, 'search', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $tosearch = filter_input(INPUT_POST, 'search', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+    $keyword  = strtolower($tosearch);
 
     //  If a genre was specified.
     if (isset($_GET['genre']) && $_GET['genre'] > 0) {
@@ -22,16 +23,16 @@
     	$selected = filter_input(INPUT_GET, 'genre', FILTER_SANITIZE_NUMBER_INT);
 
     	$query = "SELECT * FROM albums a JOIN albumgenre g ON a.albumID = g.albumID" 
-    			 ."WHERE g.genreID = :genreID AND a.title LIKE :title OR a.artist LIKE :title ORDER BY title";
+    			."WHERE g.genreID = :genreID AND LOWER(a.title) LIKE %:keyword% OR LOWER(a.artist) LIKE %:keyword% ORDER BY title";
 	    $statement = $db->prepare($query); // Returns a PDOStatement object.
 	    $statement->bindvalue(":genreID", $selected);
-	    $statement->bindvalue(":title", $keyword);
+	    $statement->bindvalue(":keyword", $keyword);
 	    $statement->execute(); // The query is now executed.
     }
     else {
-    	$query = "SELECT * FROM albums WHERE a.title LIKE :title OR a.artist LIKE :title ORDER BY title";
+    	$query = "SELECT * FROM albums WHERE LOWER(title) LIKE '%:keyword%' OR LOWER(artist) LIKE '%:keyword%' ORDER BY title";
     	$statement = $db->prepare($query); // Returns a PDOStatement object.
-	    $statement->bindvalue(":title", $keyword);
+	    $statement->bindvalue(":keyword", $keyword);
     	$statement->execute(); // The query is now executed.
     }
 
@@ -52,7 +53,8 @@
 	<?php include('header.php'); ?>
 
 	<div class="container">
-		<h1 class="pt-3">Search results for "<?= $keyword ?>"</h1>
+		<h1 class="pt-3">Search</h1>
+		<h4 class="pt-3"><?= count($albums) ?> results for "<?= $tosearch ?>"</h4>
 
 		<form class="input-group">
 			<select class="form-control" id="genre" name="genre">

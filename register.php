@@ -5,15 +5,6 @@
  * Purpose: Login or Register for a website for a database of albums.
  * ************************************************************/
 
-	//  Gets the most recent user added.
-    function getMostRecent($db){
-        $query = "SELECT MAX(userID) AS latest FROM users";
-        $statement = $db->prepare($query);
-        $statement->execute();
-        $row = $statement->fetch();
-        return $row['latest'];
-    }
-
 	require('db_connect.php');
 
     session_start();
@@ -105,7 +96,7 @@
     				$statement->bindvalue(":password", password_hash($password1, PASSWORD_DEFAULT));
     				$statement->execute();
 
-    				$id = getMostRecent($db);
+    				$id = $db->lastInsertId();
     			}
 
     			//  If the session for a taken username was set, unset it.

@@ -15,15 +15,6 @@
         return $row['name'];
     }
 
-    //  Gets the most recent album added.
-    function getMostRecent($db){
-        $query = "SELECT MAX(albumID) AS latest FROM albums";
-        $statement = $db->prepare($query);
-        $statement->execute();
-        $row = $statement->fetch();
-        return $row['latest'];
-    }
-
     //  Add genres to the album/genre table if values were entered.
     function addGenres($albumID, $db){
         $genres = [$_POST['genre1'], $_POST['genre2'], $_POST['genre3']];
@@ -230,7 +221,7 @@
             
             //  If the command was to create, associate genres with the recently added album.
             if($_POST['command'] == "Create"){
-                $albumID =  getMostRecent($db);
+                $albumID =  $db->lastInsertId();
                 addGenres($albumID, $db);
             }
             //  If the command was to Update, associate genres with the album from the GET album id.
