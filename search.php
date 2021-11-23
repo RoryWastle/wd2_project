@@ -8,6 +8,34 @@
     session_start();
 
 	require('db_connect.php');
+
+	$query = "SELECT * FROM genres ORDER BY genre";
+    $statement = $db->prepare($query);
+    $statement->execute();
+    $genres = $statement->fetchAll();
+
+    $keyword = filter_input(INPUT_POST, 'search', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+
+    //  If a genre was specified.
+    if (isset($_GET['genre']) && $_GET['genre'] > 0) {
+    	//  Sanitize the genre parameter.
+    	$selected = filter_input(INPUT_GET, 'genre', FILTER_SANITIZE_NUMBER_INT);
+
+    	$query = "SELECT * FROM albums a JOIN albumgenre g ON a.albumID = g.albumID" 
+    			 ."WHERE g.genreID = :genreID AND a.title LIKE :title OR a.artist LIKE :title ORDER BY title";
+	    $statement = $db->prepare($query); // Returns a PDOStatement object.
+	    $statement->bindvalue(":genreID", $selected);
+	    $statement->bindvalue(":title", $keyword);
+	    $statement->execute(); // The query is now executed.
+    }
+    else {
+    	$query = "SELECT * FROM albums WHERE a.title LIKE :title OR a.artist LIKE :title ORDER BY title";
+    	$statement = $db->prepare($query); // Returns a PDOStatement object.
+	    $statement->bindvalue(":title", $keyword);
+    	$statement->execute(); // The query is now executed.
+    }
+
+    $albums = $statement->fetchall();
 ?>
 
 <!DOCTYPE html>
@@ -24,7 +52,32 @@
 	<?php include('header.php'); ?>
 
 	<div class="container">
-		<h1 class="pt-3">Search</h1>
+		<h1 class="pt-3">Search results for "<?= $keyword ?>"</h1>
+
+		<form class="input-group">
+			<select class="form-control" id="genre" name="genre">
+                <option value="0">No filter</option>
+                <?php foreach ($genres as $genre): ?>
+                    <option value=<?= $genre['genreID'] ?>><?= $genre['genre'] ?></option>
+                <?php endforeach ?>
+            </select>
+            <input class="btn btn-outline-primary" type="submit" value="Filter by Genre">
+        </form>
+
+        <br />
+
+		<?php foreach ($albums as $album): ?>
+			<div class="card">
+				<div class="card-body">
+					<?php if($album['coverURL'] != NULL): ?>
+						<img src="uploads/thumbnail_<?= $album['coverURL'] ?>" alt="<?= $album['title'] ?> cover." class="thumb" />
+					<?php endif ?>
+					<h4 class="card-title"><a href="show.php?album=<?= $album['albumID'] ?>"><?= $album['title'] ?></a></h4>
+					<h6 class="card-subtitle mb-2 text-muted"><?= $album['artist'] ?> - <?= $album['year'] ?></h6>
+					<p><?= $album['likes'] ?> people like this album</p>
+				</div>
+			</div>
+    	<?php endforeach ?>
 	</div>
 
 	<?php include('footer.php'); ?>

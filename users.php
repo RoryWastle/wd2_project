@@ -2,7 +2,7 @@
     /**********************************************************************
      * Author:  Rory Wastle
      * Date:    November 22 2021
-     * Purpose: View, add, delete users in the ablums database.
+     * Purpose: View, promote, demote, delete users in the ablums database.
      **********************************************************************/
     
     session_start();

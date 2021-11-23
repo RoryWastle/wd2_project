@@ -24,10 +24,6 @@
 	    $statement->bindvalue(":genreID", $selected);
 	    $statement->execute(); // The query is now executed.
     }
-    elseif (isset($_GET['genre']) && $_GET['genre'] == 0) {
-    	header('Location: albums.php');
-    	exit();
-    }
     else {
     	$query = "SELECT * FROM albums ORDER BY title";
     	$statement = $db->prepare($query); // Returns a PDOStatement object.
