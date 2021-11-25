@@ -48,7 +48,12 @@
 				<?php endif ?>
 				<h4 class="card-title"><a href="show.php?album=<?= $album['albumID'] ?>"><?= $album['title'] ?></a></h4>
 				<h6 class="card-subtitle mb-2 text-muted"><?= $album['artist'] ?> - <?= $album['year'] ?></h6>
-				<p><?= $album['likes'] ?> people like this album</p>
+				
+				<?php if($album['likes'] == 1): ?>
+                    <p><?= $album['likes'] ?> person likes this album</p>
+                <?php else: ?>
+                    <p><?= $album['likes'] ?> people like this album</p>
+                <?php endif ?>
 			</div>
 		</div>
 	</div>

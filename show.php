@@ -14,7 +14,7 @@
         $id = filter_input(INPUT_GET, 'album', FILTER_SANITIZE_NUMBER_INT);
 
         //  If there was a post and the comment input is not blank.
-        if ($_POST && $_POST['comment'] != NULL) {
+        if ($_POST && isset($_POST['comment']) && $_POST['comment'] != NULL) {
             //  Sanitize the new comment.
             $comment = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
@@ -31,7 +31,57 @@
                 exit;
             }
         }
-        //  If there was a post and no comment was entered.
+        //  If there was a post and the command was to like.
+        elseif ($_POST && $_POST['command'] == 'Like') {
+            $query = "INSERT INTO albumlikes (albumID, userID) VALUES (:album, :user)";
+            $statement = $db->prepare($query);
+            $statement->bindValue(':album', $id, PDO::PARAM_INT);
+            $statement->bindValue(':user', $_SESSION['user'], PDO::PARAM_INT);
+
+            //  If the statement was executed, go back to the page.
+            if ($statement->execute()) {
+                $query = "SELECT COUNT(*) FROM albumlikes WHERE albumID = :album";
+                $statement = $db->prepare($query);
+                $statement->bindValue(':album', $id, PDO::PARAM_INT);
+                $statement->execute();
+                $likes = $statement->fetch()['COUNT(*)'];
+
+                $query = "UPDATE albums SET likes = :likes WHERE albumID = :albumID";
+                $statement = $db->prepare($query);
+                $statement->bindValue(':likes', $likes, PDO::PARAM_INT);
+                $statement->bindValue(':albumID', $id, PDO::PARAM_INT);
+                $statement->execute();
+
+                header("Location: show.php?album={$_GET['album']}");
+                exit;
+            }
+        }
+        //  If there was a post and the command was to unlike
+        elseif ($_POST && $_POST['command'] == 'Unlike') {
+            $query = "DELETE FROM albumlikes WHERE albumID = :album AND userID = :user";
+            $statement = $db->prepare($query);
+            $statement->bindValue(':album', $id, PDO::PARAM_INT);
+            $statement->bindValue(':user', $_SESSION['user'], PDO::PARAM_INT);
+
+            //  If the statement was executed, go back to the page.
+            if ($statement->execute()) {
+                $query = "SELECT COUNT(*) FROM albumlikes WHERE albumID = :album";
+                $statement = $db->prepare($query);
+                $statement->bindValue(':album', $id, PDO::PARAM_INT);
+                $statement->execute();
+                $likes = $statement->fetch()['COUNT(*)'];
+
+                $query = "UPDATE albums SET likes = :likes + 1 WHERE albumID = :albumID";
+                $statement = $db->prepare($query);
+                $statement->bindValue(':likes', $likes, PDO::PARAM_INT);
+                $statement->bindValue(':albumID', $id, PDO::PARAM_INT);
+                $statement->execute();
+
+                header("Location: show.php?album={$_GET['album']}");
+                exit;
+            }
+        }
+        //  If there was a post and no comment was entered or like left.
         elseif ($_POST) {
             header("Location: show.php?album={$_GET['album']}");
             exit;
@@ -86,6 +136,9 @@
         //  Assume the current user is not an admin.
         $admin = false;
 
+        //  Assume the current user has not like the album.
+        $liked = false;
+
         //  If the current user is logged in.
         if (isset($_SESSION['user'])) {
             //  Select if this user is an admin.
@@ -95,6 +148,15 @@
             $statement->execute();
 
             $admin = $statement->fetch()['admin'];
+
+            //  Select if this user has liked this album.
+            $query = "SELECT * FROM albumlikes WHERE albumID = :albumID AND userID = :userID";
+            $statement = $db->prepare($query);
+            $statement->bindValue(':albumID', $id, PDO::PARAM_INT);
+            $statement->bindValue(':userID', $_SESSION['user'], PDO::PARAM_INT);
+            $statement->execute();
+
+            $liked = count($statement->fetchAll()) > 0;
         }
     } else {
         header("Location: index.php");
@@ -140,9 +202,24 @@
                         <?php endforeach ?>
                     </ul>
                 <?php endif ?>
-                <p><?= $album['likes'] ?> people like this album</p>
+
+                <?php if($album['likes'] == 1): ?>
+                    <p><?= $album['likes'] ?> person likes this album</p>
+                <?php else: ?>
+                    <p><?= $album['likes'] ?> people like this album</p>
+                <?php endif ?>
+
                 <?php if(isset($_SESSION['user'])): ?>
-                    <button class="btn btn-primary">Like</button>
+                    <form action="show.php?album=<?= $_GET['album'] ?>" method="post">
+                        <input type="hidden" name="user" value="<?=  $_SESSION['user']?>">
+                        <input type="hidden" name="album" value="<?= $id ?>">
+                        <?php if($liked): ?>
+                            <input class="btn btn-primary" type="submit" name="command" value="Unlike">
+                        <?php else: ?>
+                            <input class="btn btn-primary" type="submit" name="command" value="Like">
+                        <?php endif ?>
+                    </form>
+                    
                 <?php endif ?>
             </div>
         </div>
