@@ -9,7 +9,7 @@
 
     require('db_connect.php');
 
-    //  If there was a post and the new genre input is not blank/
+    //  If there was a post and the new genre input is not blank.
     if ($_POST && $_POST['newgenre'] != NULL) {
         //  Sanitize the new genre.
         $newgenre = filter_input(INPUT_POST, 'newgenre', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
@@ -31,17 +31,16 @@
         exit;
     }
 
-    //  If a delete request for a certain album was made.
-    if (isset($_GET['toDelete'])) {
-        //  Delete the requested genre from the table.
-        $query = "DELETE FROM genres WHERE genreID = :genreID";
-        $statement = $db->prepare($query);
-        $statement->bindvalue(':genreID', $_GET['toDelete']);
+    //  If an edit request for a certain album was made.
+    if (isset($_GET['toEdit'])) {
+        $toEditId = filter_input(INPUT_GET, 'toEdit', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-        if ($statement->execute()) {
-            header("Location: genres.php");
-            exit;
-        }
+        //  Select the requested genre from the table.
+        $query = "SELECT * FROM genres WHERE genreID = :genreID";
+        $statement = $db->prepare($query);
+        $statement->bindvalue(":genreID", $toEditId, PDO::PARAM_INT);
+        $statement->execute();
+        $toEdit = $statement->fetch();
     }
 
     $query = "SELECT * FROM genres ORDER BY genre";
@@ -67,21 +66,32 @@
 
         <h1 class="pt-3">Genres</h1>
 
-        <table class="table table-hover w-50">
-            <?php foreach($genres as $genre): ?>
-                <tr>
-                    <td><?= $genre['genre'] ?></td>
-                    <td><a href="?toDelete=<?= $genre['genreID'] ?>">Delete</a></td>
-                </tr>
-            <?php endforeach ?>
-        </table>
+        <?php if(isset($_GET['toEdit'])): ?>
+            <h3>Edit Genre</h3>
 
-        <h3>Add Genre</h3>
+            <form action="editgenre.php" method="post">
+                <input type="hidden" name="genreID" value="<?= $toEditId ?>">
+                <input class="form-control" name="editgenre" id="editgenre" value="<?= $toEdit['genre'] ?>">
+                <input class="btn btn-primary" type="submit" name="command" value="Edit">
+                <input class="btn btn-danger" type="submit" name="command" value="Delete" onclick="return confirm('Are you sure you wish to delete this genre?')">
+            </form>
+        <?php else: ?>
+            <table class="table table-hover w-50">
+                <?php foreach($genres as $genre): ?>
+                    <tr>
+                        <td><?= $genre['genre'] ?></td>
+                        <td><a href="?toEdit=<?= $genre['genreID'] ?>">Edit</a></td>
+                    </tr>
+                <?php endforeach ?>
+            </table>
 
-        <form class="input-group" action="genres.php" method="post">
-            <input class="form-control" name="newgenre" id="newgenre">
-            <input class="btn btn-primary" type="submit" name="command" value="Add">
-        </form>
+            <h3>Add Genre</h3>
+
+            <form class="input-group" action="genres.php" method="post">
+                <input class="form-control" name="newgenre" id="newgenre">
+                <input class="btn btn-primary" type="submit" name="command" value="Add">
+            </form>
+        <?php endif ?>
 
     </div>
         
