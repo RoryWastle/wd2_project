@@ -1,12 +1,12 @@
 <?php
-	/**********************************************************************
-     * Author:  Rory Wastle
-     * Date:    November 2 2021
-     * Purpose: To create a new record in the classic albums database.
-     **********************************************************************/
+/**********************************************************************
+ * Author:  Rory Wastle
+ * Date:    November 2 2021
+ * Purpose: To create a new record in the classic albums database.
+ **********************************************************************/
 
     //  Gets the user posting the album.
-    function getUser($db){
+    function get_user($db){
         $query = "SELECT name FROM users WHERE userID = :id";
         $statement = $db->prepare($query);
         $statement->bindValue(":id", $_SESSION['user'], PDO::PARAM_INT);
@@ -16,7 +16,7 @@
     }
 
     //  Add genres to the album/genre table if values were entered.
-    function addGenres($albumID, $db){
+    function add_genres($albumID, $db){
         $genres = [$_POST['genre1'], $_POST['genre2'], $_POST['genre3']];
         foreach ($genres as $genre) {
             if($genre != 0){
@@ -125,7 +125,7 @@
 
         //  If the year is not numeric or is not four digits, set the value to null.
         if(is_numeric($year)){
-            if($year < 1000 && $year >= 9999){
+            if($year < 1000 || $year >= 9999){
                 $year = NULL;
             }
         }
@@ -138,12 +138,12 @@
         $description = !empty($_POST['description']) ? strip_tags(stripslashes($_POST['description']), $allowedTags) : NULL;
 
         //  See if an image upload is detected.
-        $image_upload_detected = isset($_FILES['image']) && ($_FILES['image']['error'] === 0);
+        $imageUploadDetected = isset($_FILES['image']) && ($_FILES['image']['error'] === 0);
         
         //  If the command was Create.
         if($_POST['command'] == "Create"){
             //  Build the query based on if an image was uploaded.
-            if($image_upload_detected) { 
+            if($imageUploadDetected) { 
                 //  Build the parameterized SQL query and bind to the above sanitized values.
                 $query = "INSERT INTO albums (title, artist, year, coverURL, description, postedBy) VALUES (:title, :artist, :year, :coverURL, :description, :postedBy)";
             }
@@ -154,7 +154,7 @@
         //  If the command was to Update
         elseif($_POST['command'] == "Update"){
             //  Build the query based on if an image was uploaded.
-            if($image_upload_detected) { 
+            if($imageUploadDetected) { 
                 //  Build the parameterized SQL query and bind to the above sanitized values.
                 $query = "UPDATE albums SET title = :title, artist = :artist, year = :year, coverURL = :coverURL, description = :description, postedBy = :postedBy, updated = current_timestamp() WHERE albumID = :albumID";
             }
@@ -192,7 +192,7 @@
             $statement->bindValue(":postedBy", $_SESSION['user']);
 
             //  If an image was uploaded.
-            if($image_upload_detected) { 
+            if($imageUploadDetected) { 
                 $image_filename       = $_SESSION['user'] . '-' . time() . '-' . $_FILES['image']['name'];
                 $temporary_image_path = $_FILES['image']['tmp_name'];
                 $new_image_path       = file_upload_path($image_filename);
@@ -222,11 +222,11 @@
             //  If the command was to create, associate genres with the recently added album.
             if($_POST['command'] == "Create"){
                 $albumID =  $db->lastInsertId();
-                addGenres($albumID, $db);
+                add_genres($albumID, $db);
             }
             //  If the command was to Update, associate genres with the album from the GET album id.
             elseif($_POST['command'] == "Update"){
-                addGenres($_GET['albumID'], $db);
+                add_genres($_GET['albumID'], $db);
             }
 
             header("Location: show.php?albumID=".$_GET['albumID']);
@@ -246,9 +246,11 @@
 <body>
     <?php if(!$valid): ?>
         <div id="wrapper">
-            <h2>An error occurred when adding your album.</h2>
-            <p>Both the title and artist must be at least one character.</p>
-            <p><a href="index.php">Return Home</a></p>
+            <div class="p-3">
+                <h2>An error occurred when adding your album.</h2>
+                <p>Both the title and artist must be at least one character.</p>
+                <p><a href="index.php">Return Home</a></p>
+            </div>
         </div> 
     <?php endif ?>
 </body>

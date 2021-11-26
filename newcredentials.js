@@ -6,8 +6,9 @@
 
 //  Run when the DOM has loaded.
 function load(){
-    let passerror = document.getElementById('pass-error');
-    passerror.style.display = 'none';
+    //let passerror = document.getElementById('pass-error');
+    //passerror.style.display = 'none';
+    checkPasswords();
 
     let pass1 = document.getElementById('newpass1');
     pass1.addEventListener("blur", checkPasswords);

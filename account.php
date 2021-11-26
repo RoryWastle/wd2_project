@@ -15,6 +15,10 @@
 
 	require('db_connect.php');
 
+	$username  = "";
+	$password1 = "";
+	$password2 = "";
+
 	//  If a post happened and the command was Logout.
     if ($_POST && $_POST['command'] == 'Logout'){
     	//  Remove all session data.
@@ -51,8 +55,8 @@
 		if (!$taken) {
     		$query = "UPDATE users SET name = :name WHERE userID = :id";
     		$statement = $db->prepare($query);
-    		$statement->bindvalue(":name", $username);
-    		$statement->bindvalue(":id", $_SESSION['user']);
+    		$statement->bindValue(":name", $username);
+    		$statement->bindValue(":id", $_SESSION['user']);
     		$statement->execute();
 
     		if ($statement->execute()) {
@@ -75,8 +79,8 @@
     	if($password1 == $password2){
     		$query = "UPDATE users SET password = :password WHERE userID = :id";
     		$statement = $db->prepare($query);
-    		$statement->bindvalue(":password", password_hash($password1, PASSWORD_DEFAULT));
-    		$statement->bindvalue(":id", $_SESSION['user']);
+    		$statement->bindValue(":password", password_hash($password1, PASSWORD_DEFAULT));
+    		$statement->bindValue(":id", $_SESSION['user']);
 
     		if ($statement->execute()) {
 	            header("Location: account.php");
@@ -97,7 +101,7 @@
     //  Select information on the current user.
 	$query = "SELECT * FROM users WHERE userID = :id";
     $statement = $db->prepare($query); // Returns a PDOStatement object.
-    $statement->bindvalue(":id", $_SESSION['user'], PDO::PARAM_INT);
+    $statement->bindValue(":id", $_SESSION['user'], PDO::PARAM_INT);
     $statement->execute(); // The query is now executed.
     $user = $statement->fetch();
 ?>
@@ -133,7 +137,7 @@
             		<p class="text-danger">This username is taken.</p>
             	<?php endif ?>
                 <label for="newname">New Username</label>
-                <input class="form-control" name="newname" id="newname" />
+                <input class="form-control" name="newname" id="newname" value="<?= $username ?>" />
             </div>
             <div class="form-group p-3">
                 <input class="btn btn-primary" type="submit" name="command" value="Change Username" />
@@ -143,12 +147,12 @@
         <form action="account.php" method="post" class="form-inline">
             <div class="form-group p-3">
                 <label for="passlogin">New Password</label>
-                <input type="password" class="form-control" name="newpass1" id="newpass1" />
+                <input type="password" class="form-control" name="newpass1" id="newpass1" value="<?= $password1 ?>" />
             </div>
             <div class="form-group p-3">
             	<p class="text-danger" id="pass-error">The passwords do not match.</p>
                 <label for="passlogin">Confirm New Password</label>
-                <input type="password" class="form-control" name="newpass2" id="newpass2" />
+                <input type="password" class="form-control" name="newpass2" id="newpass2" value="<?= $password2 ?>" />
             </div>
             <div class="form-group p-3">
                 <input class="btn btn-primary" type="submit" name="command" value="Change Password" />

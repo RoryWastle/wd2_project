@@ -20,6 +20,10 @@
     //  Set the id to -1.
     $id = -1;
 
+    $username  = "";
+    $password1 = "";
+    $password2 = "";
+
     //  If a post happened and the command was to login.
     if ($_POST && $_POST['command'] == 'Login'){
     	//  If the username and password spaces were not blank.
@@ -92,8 +96,8 @@
     				//  Add the user to the table.
     				$query = "INSERT INTO users (name, password) VALUES (:name, :password)";
     				$statement = $db->prepare($query);
-    				$statement->bindvalue(":name", $username);
-    				$statement->bindvalue(":password", password_hash($password1, PASSWORD_DEFAULT));
+    				$statement->bindValue(":name", $username);
+    				$statement->bindValue(":password", password_hash($password1, PASSWORD_DEFAULT));
     				$statement->execute();
 
     				$id = $db->lastInsertId();
@@ -172,16 +176,16 @@
             		<p class="text-danger">This username is taken.</p>
             	<?php endif ?>
                 <label for="newname">Username</label>
-                <input class="form-control" name="newname" id="newname" />
+                <input class="form-control" name="newname" id="newname" value="<?= $username ?>" />
             </div>
             <div class="form-group p-3">
                 <label for="newpass1">Password</label>
-                <input type="password" class="form-control" name="newpass1" id="newpass1" />
+                <input type="password" class="form-control" name="newpass1" id="newpass1" value="<?= $password1 ?>" />
             </div>
             <div class="form-group p-3">
             	<p class="text-danger" id="pass-error">The passwords do not match.</p>
                 <label for="newpass2">Confirm Password</label>
-                <input type="password" class="form-control" name="newpass2" id="newpass2" />
+                <input type="password" class="form-control" name="newpass2" id="newpass2" value="<?= $password2 ?>" />
             </div>
             <div class="form-group p-3">
                 <input class="btn btn-primary" type="submit" name="command" value="Register" />

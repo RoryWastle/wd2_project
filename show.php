@@ -1,9 +1,9 @@
 <?php
-    /**********************************************************************
-     * Author:  Rory Wastle
-     * Date:    November 3, 2021
-     * Purpose: To show a certain album in the database.
-     **********************************************************************/
+/**********************************************************************
+ * Author:  Rory Wastle
+ * Date:    November 3 2021
+ * Purpose: To show a certain album in the database.
+ **********************************************************************/
     
     session_start();
 
@@ -21,9 +21,9 @@
             //  Insert the new comment into the table.
             $query = "INSERT INTO comments (comment, albumID, userID) VALUES (:comment, :albumID, :userID)";
             $statement = $db->prepare($query);
-            $statement->bindValue(':comment', $comment);
-            $statement->bindValue(':albumID', $id, PDO::PARAM_INT);
-            $statement->bindValue(':userID', $_SESSION['user'], PDO::PARAM_INT);
+            $statement->bindValue(":comment", $comment);
+            $statement->bindValue(":albumID", $id, PDO::PARAM_INT);
+            $statement->bindValue(":userID", $_SESSION['user'], PDO::PARAM_INT);
             
             //  If the statement was executed, go back to the page.
             if ($statement->execute()) {
@@ -35,21 +35,22 @@
         elseif ($_POST && $_POST['command'] == 'Like') {
             $query = "INSERT INTO albumlikes (albumID, userID) VALUES (:album, :user)";
             $statement = $db->prepare($query);
-            $statement->bindValue(':album', $id, PDO::PARAM_INT);
-            $statement->bindValue(':user', $_SESSION['user'], PDO::PARAM_INT);
+            $statement->bindValue(":album", $id, PDO::PARAM_INT);
+            $statement->bindValue(":user", $_SESSION['user'], PDO::PARAM_INT);
 
             //  If the statement was executed, go back to the page.
             if ($statement->execute()) {
                 $query = "SELECT COUNT(*) FROM albumlikes WHERE albumID = :album";
                 $statement = $db->prepare($query);
-                $statement->bindValue(':album', $id, PDO::PARAM_INT);
+                $statement->bindValue(":album", $id, PDO::PARAM_INT);
                 $statement->execute();
                 $likes = $statement->fetch()['COUNT(*)'];
 
+                //  Update the amount of likes on this album.
                 $query = "UPDATE albums SET likes = :likes WHERE albumID = :albumID";
                 $statement = $db->prepare($query);
-                $statement->bindValue(':likes', $likes, PDO::PARAM_INT);
-                $statement->bindValue(':albumID', $id, PDO::PARAM_INT);
+                $statement->bindValue(":likes", $likes, PDO::PARAM_INT);
+                $statement->bindValue(":albumID", $id, PDO::PARAM_INT);
                 $statement->execute();
 
                 header("Location: show.php?album={$_GET['album']}");
@@ -60,21 +61,22 @@
         elseif ($_POST && $_POST['command'] == 'Unlike') {
             $query = "DELETE FROM albumlikes WHERE albumID = :album AND userID = :user";
             $statement = $db->prepare($query);
-            $statement->bindValue(':album', $id, PDO::PARAM_INT);
-            $statement->bindValue(':user', $_SESSION['user'], PDO::PARAM_INT);
+            $statement->bindValue(":album", $id, PDO::PARAM_INT);
+            $statement->bindValue(":user", $_SESSION['user'], PDO::PARAM_INT);
 
             //  If the statement was executed, go back to the page.
             if ($statement->execute()) {
                 $query = "SELECT COUNT(*) FROM albumlikes WHERE albumID = :album";
                 $statement = $db->prepare($query);
-                $statement->bindValue(':album', $id, PDO::PARAM_INT);
+                $statement->bindValue(":album", $id, PDO::PARAM_INT);
                 $statement->execute();
                 $likes = $statement->fetch()['COUNT(*)'];
 
-                $query = "UPDATE albums SET likes = :likes + 1 WHERE albumID = :albumID";
+                //  Update the amount of likes on this album.
+                $query = "UPDATE albums SET likes = :likes WHERE albumID = :albumID";
                 $statement = $db->prepare($query);
-                $statement->bindValue(':likes', $likes, PDO::PARAM_INT);
-                $statement->bindValue(':albumID', $id, PDO::PARAM_INT);
+                $statement->bindValue(":likes", $likes, PDO::PARAM_INT);
+                $statement->bindValue(":albumID", $id, PDO::PARAM_INT);
                 $statement->execute();
 
                 header("Location: show.php?album={$_GET['album']}");
@@ -92,7 +94,7 @@
             //  Delete the requested comment from the table.
             $query = "DELETE FROM comments WHERE commentID = :commentID";
             $statement = $db->prepare($query);
-            $statement->bindvalue(':commentID', $_GET['toDelete']);
+            $statement->bindValue(":commentID", $_GET['toDelete']);
 
             //  If the statement was executed, go back to the page.
             if ($statement->execute()) {
@@ -104,33 +106,29 @@
         //  Select the album.
         $query = "SELECT * FROM albums WHERE albumID = :id";
         $statement = $db->prepare($query);
-        $statement->bindValue(':id', $id, PDO::PARAM_INT);
+        $statement->bindValue(":id", $id, PDO::PARAM_INT);
         $statement->execute();
-
         $album = $statement->fetch();
 
         //  Select the name of the user that last updated this album.
         $query = "SELECT name FROM users WHERE userID = :id";
         $statement = $db->prepare($query);
-        $statement->bindValue(':id', $album['postedBy'], PDO::PARAM_INT);
+        $statement->bindValue(":id", $album['postedBy'], PDO::PARAM_INT);
         $statement->execute();
-
         $poster = $statement->fetch();
 
         //  Select the genres associated with this album.
         $query = "SELECT g.genre FROM genres g JOIN albumgenre a ON g.genreID = a.genreID WHERE a.albumID = :id";
         $statement = $db->prepare($query);
-        $statement->bindValue(':id', $id, PDO::PARAM_INT);
+        $statement->bindValue(":id", $id, PDO::PARAM_INT);
         $statement->execute();
-
         $genres = $statement->fetchAll();
 
         //  Select the comments associated with this album.
         $query = "SELECT c.commentID, c.comment, c.userID, u.name FROM comments c JOIN users u ON u.userID = c.userID WHERE albumID = :albumID ORDER BY commentID DESC";
         $statement = $db->prepare($query);
-        $statement->bindValue(':albumID', $id, PDO::PARAM_INT);
+        $statement->bindValue(":albumID", $id, PDO::PARAM_INT);
         $statement->execute();
-
         $comments = $statement->fetchAll();
 
         //  Assume the current user is not an admin.
@@ -144,18 +142,16 @@
             //  Select if this user is an admin.
             $query = "SELECT admin FROM users WHERE userID = :userID";
             $statement = $db->prepare($query);
-            $statement->bindValue(':userID', $_SESSION['user'], PDO::PARAM_INT);
+            $statement->bindValue(":userID", $_SESSION['user'], PDO::PARAM_INT);
             $statement->execute();
-
             $admin = $statement->fetch()['admin'];
 
             //  Select if this user has liked this album.
             $query = "SELECT * FROM albumlikes WHERE albumID = :albumID AND userID = :userID";
             $statement = $db->prepare($query);
-            $statement->bindValue(':albumID', $id, PDO::PARAM_INT);
-            $statement->bindValue(':userID', $_SESSION['user'], PDO::PARAM_INT);
+            $statement->bindValue(":albumID", $id, PDO::PARAM_INT);
+            $statement->bindValue(":userID", $_SESSION['user'], PDO::PARAM_INT);
             $statement->execute();
-
             $liked = count($statement->fetchAll()) > 0;
         }
     } else {
@@ -191,7 +187,7 @@
                 
                 <h6 class="card-subtitle mb-2 text-muted"><?= $album['artist'] ?> - <?= $album['year'] == NULL ? "[unknown year]" : $album['year'] ?></h6>
                 <?php if($album['coverURL'] != NULL): ?>
-                    <img src="uploads/medium_<?= $album['coverURL'] ?>" alt="<?= $album['title'] ?> cover.">
+                    <img src="uploads/medium_<?= $album['coverURL'] ?>" alt="<?= $album['title'] ?> cover." />
                 <?php endif ?>
                 <hr />
                 <?php if (count($genres) > 0): ?>
@@ -211,12 +207,10 @@
 
                 <?php if(isset($_SESSION['user'])): ?>
                     <form action="show.php?album=<?= $_GET['album'] ?>" method="post">
-                        <input type="hidden" name="user" value="<?=  $_SESSION['user']?>">
-                        <input type="hidden" name="album" value="<?= $id ?>">
                         <?php if($liked): ?>
-                            <input class="btn btn-primary" type="submit" name="command" value="Unlike">
+                            <input class="btn btn-primary" type="submit" name="command" value="Unlike" />
                         <?php else: ?>
-                            <input class="btn btn-primary" type="submit" name="command" value="Like">
+                            <input class="btn btn-primary" type="submit" name="command" value="Like" />
                         <?php endif ?>
                     </form>
                     
@@ -240,7 +234,7 @@
                 <form action="show.php?album=<?= $_GET['album'] ?>" method="post">
                     <label for="comment"></label>
                     <textarea class="form-control" name="comment" id="comment"></textarea>
-                    <input type="submit" name="command" value="Post" class="btn btn-primary">
+                    <input type="submit" name="command" value="Post" class="btn btn-primary" />
                 </form>
                 <br />
             <?php endif ?>

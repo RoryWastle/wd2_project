@@ -1,9 +1,9 @@
 <?php
-    /**********************************************************************
-     * Author:  Rory Wastle
-     * Date:    November 22 2021
-     * Purpose: View, promote, demote, delete users in the ablums database.
-     **********************************************************************/
+/**********************************************************************
+ * Author:  Rory Wastle
+ * Date:    November 22 2021
+ * Purpose: View, promote, demote, delete users in the ablums database.
+ **********************************************************************/
     
     session_start();
 
@@ -14,7 +14,7 @@
         //  Delete the requested user from the table.
         $query = "DELETE FROM users WHERE userID = :userID";
         $statement = $db->prepare($query);
-        $statement->bindvalue(':userID', $_GET['toDelete'], PDO::PARAM_INT);
+        $statement->bindValue(":userID", $_GET['toDelete'], PDO::PARAM_INT);
 
         if ($statement->execute()) {
             header("Location: users.php");
@@ -27,7 +27,7 @@
         //  Set the requested user's admin value to true.
         $query = "UPDATE users SET admin = TRUE WHERE userID = :userID";
         $statement = $db->prepare($query);
-        $statement->bindvalue(':userID', $_GET['promote'], PDO::PARAM_INT);
+        $statement->bindValue(":userID", $_GET['promote'], PDO::PARAM_INT);
 
         if ($statement->execute()) {
             header("Location: users.php");
@@ -40,7 +40,7 @@
         //  Set the requested user's admin value to false.
         $query = "UPDATE users SET admin = FALSE WHERE userID = :userID";
         $statement = $db->prepare($query);
-        $statement->bindvalue(':userID', $_GET['demote'], PDO::PARAM_INT);
+        $statement->bindValue(":userID", $_GET['demote'], PDO::PARAM_INT);
 
         if ($statement->execute()) {
             header("Location: users.php");
@@ -48,7 +48,7 @@
         }
     }
 
-    $query = "SELECT * FROM users ORDER BY admin DESC";
+    $query = "SELECT * FROM users ORDER BY admin DESC, name";
     $statement = $db->prepare($query); // Returns a PDOStatement object.
     $statement->execute(); // The query is now executed.
     $users = $statement->fetchAll();

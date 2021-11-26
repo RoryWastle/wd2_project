@@ -10,7 +10,7 @@
     if (isset($_SESSION['user'])) {
         $query = "SELECT name, admin FROM users WHERE userID = :id";
         $statement = $db->prepare($query); // Returns a PDOStatement object.
-        $statement->bindvalue(":id", $_SESSION['user'], PDO::PARAM_INT);
+        $statement->bindValue(":id", $_SESSION['user'], PDO::PARAM_INT);
         $statement->execute(); // The query is now executed.
 
         $currentuser = $statement->fetch();
@@ -46,8 +46,8 @@
     </div>
 
     <form class="input-group mx-5" action="search.php">
-        <input class="form-control" name="search" id="search" placeholder="Search albums...">
-        <input class="btn btn-outline-primary" type="submit" value="Search">
+        <input class="form-control" name="search" id="search" placeholder="Search albums..." />
+        <input class="btn btn-outline-primary" type="submit" value="Search" />
     </form>
 
     <?php if(isset($_SESSION['user'])): ?>

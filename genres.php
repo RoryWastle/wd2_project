@@ -1,9 +1,9 @@
 <?php
-    /**********************************************************************
-     * Author:  Rory Wastle
-     * Date:    November 18 2021
-     * Purpose: View, add, delete genres in the ablums database.
-     **********************************************************************/
+/**********************************************************************
+ * Author:  Rory Wastle
+ * Date:    November 18 2021
+ * Purpose: View, edit genres in the ablums database.
+ **********************************************************************/
     
     session_start();
 
@@ -17,7 +17,7 @@
         //  Insert the new genre into the table.//  If the statement was executed, go back to the page.
         $query = "INSERT INTO genres (genre) VALUES (:newgenre)";
         $statement = $db->prepare($query);
-        $statement->bindvalue(':newgenre', $newgenre);
+        $statement->bindValue(":newgenre", $newgenre);
         
         //  If the statement was executed, go back to the page.
         if ($statement->execute()) {
@@ -38,7 +38,7 @@
         //  Select the requested genre from the table.
         $query = "SELECT * FROM genres WHERE genreID = :genreID";
         $statement = $db->prepare($query);
-        $statement->bindvalue(":genreID", $toEditId, PDO::PARAM_INT);
+        $statement->bindValue(":genreID", $toEditId, PDO::PARAM_INT);
         $statement->execute();
         $toEdit = $statement->fetch();
     }
@@ -70,10 +70,16 @@
             <h3>Edit Genre</h3>
 
             <form action="editgenre.php" method="post">
-                <input type="hidden" name="genreID" value="<?= $toEditId ?>">
-                <input class="form-control" name="editgenre" id="editgenre" value="<?= $toEdit['genre'] ?>">
-                <input class="btn btn-primary" type="submit" name="command" value="Edit">
-                <input class="btn btn-danger" type="submit" name="command" value="Delete" onclick="return confirm('Are you sure you wish to delete this genre?')">
+                <input type="hidden" name="genreID" value="<?= $toEditId ?>" />
+                <input class="form-control" name="editgenre" id="editgenre" value="<?= $toEdit['genre'] ?>" />
+                <input class="btn btn-primary" type="submit" name="command" value="Edit" />
+                <input 
+                    class="btn btn-danger" 
+                    type="submit" 
+                    name="command" 
+                    value="Delete" 
+                    onclick="return confirm('Are you sure you wish to delete this genre?')" 
+                />
             </form>
         <?php else: ?>
             <table class="table table-hover w-50">
@@ -88,8 +94,8 @@
             <h3>Add Genre</h3>
 
             <form class="input-group" action="genres.php" method="post">
-                <input class="form-control" name="newgenre" id="newgenre">
-                <input class="btn btn-primary" type="submit" name="command" value="Add">
+                <input class="form-control" name="newgenre" id="newgenre" />
+                <input class="btn btn-primary" type="submit" name="command" value="Add" />
             </form>
         <?php endif ?>
 

@@ -1,15 +1,15 @@
 <?php
-    /**********************************************************************
-     * Author:  Rory Wastle
-     * Date:    November 2, 2021
-     * Purpose: To create a new album in the database.
-     **********************************************************************/
+/**********************************************************************
+ * Author:  Rory Wastle
+ * Date:    November 2 2021
+ * Purpose: To create a new album in the database.
+ **********************************************************************/
     
     session_start();
 
     require('db_connect.php');
-    //require('authenticate.php');
 
+    //  Select the genres.
     $query = "SELECT * FROM genres ORDER BY genre";
     $statement = $db->prepare($query); // Returns a PDOStatement object.
     $statement->execute(); // The query is now executed.
@@ -46,7 +46,7 @@
             </div>
             <div class="form-group p-3">
                 <label for="image">Album Cover</label>
-                <input class="form-control" type="file" name="image" id="image">
+                <input class="form-control" type="file" name="image" id="image" />
             </div>
             <div class="form-group p-3">
                 <label for="year">Year</label>

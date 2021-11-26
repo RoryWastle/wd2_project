@@ -9,6 +9,7 @@
 
 	require('db_connect.php');
 
+	//  Select the genres.
 	$query = "SELECT * FROM genres ORDER BY genre";
     $statement = $db->prepare($query);
     $statement->execute();
@@ -21,12 +22,14 @@
     	//  Sanitize the genre parameter.
     	$selectedGenre = filter_input(INPUT_GET, 'genre', FILTER_SANITIZE_NUMBER_INT);
 
+    	//  Select the albums that are associated with this genre.
     	$query = "SELECT * FROM albums a WHERE a.albumID IN (SELECT g.albumID FROM albumgenre g WHERE g.genreID = :genreID) ORDER BY a.title";
 	    $statement = $db->prepare($query); // Returns a PDOStatement object.
 	    $statement->bindvalue(":genreID", $selectedGenre);
 	    $statement->execute(); // The query is now executed.
     }
     else {
+    	//  Select all albums.
     	$query = "SELECT * FROM albums ORDER BY title";
     	$statement = $db->prepare($query); // Returns a PDOStatement object.
     	$statement->execute(); // The query is now executed.
@@ -62,7 +65,7 @@
                     </option>
                 <?php endforeach ?>
             </select>
-            <input class="btn btn-outline-primary" type="submit" value="Filter by Genre">
+            <input class="btn btn-outline-primary" type="submit" value="Filter by Genre" />
         </form>
 
         <br />

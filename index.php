@@ -9,6 +9,7 @@
 
 	require('db_connect.php');
 
+	//  Select the album with the most likes.
 	$query = "SELECT * FROM albums WHERE likes = (SELECT MAX(likes) FROM albums)";
     $statement = $db->prepare($query); // Returns a PDOStatement object.
     $statement->execute(); // The query is now executed.

@@ -5,7 +5,6 @@
  * Purpose: Edits or deletes genre from the genres table.
  **********************************************************************/
 	
-	
     session_start();
 
     require('db_connect.php');
@@ -21,7 +20,7 @@
         //  Update the requested genre in the table.
         $query = "UPDATE genres SET genre = :genre WHERE genreID = :genreID";
         $statement = $db->prepare($query);
-        $statement->bindvalue(":genre", $updated);
+        $statement->bindValue(":genre", $updated);
     }
     //  If the command was to delete
     elseif ($_POST['command'] == 'Delete') {
@@ -36,7 +35,7 @@
 
     //  If the info was valid
     if ($valid) {
-    	$statement->bindvalue(":genreID", $_POST['genreID'], PDO::PARAM_INT);
+    	$statement->bindValue(":genreID", $_POST['genreID'], PDO::PARAM_INT);
 
 	    if ($statement->execute()) {
 	        header("Location: genres.php");
@@ -55,9 +54,11 @@
 <body>
     <?php if(!$valid): ?>
         <div id="wrapper">
-            <h2>An error occurred when editing the genre.</h2>
-            <p>The genre must be at least one character.</p>
-            <p><a href="genres.php">Return to Genres</a></p>
+            <div class="p-3">
+                <h2>An error occurred when editing the genre.</h2>
+                <p>The genre must be at least one character.</p>
+                <p><a href="genres.php">Return to Genres</a></p>
+            </div>
         </div> 
     <?php endif ?>
 </body>

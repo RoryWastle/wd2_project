@@ -1,15 +1,15 @@
 <?php
-    /**********************************************************************
-     * Author:  Rory Wastle
-     * Date:    November 2, 2021
-     * Purpose: To edit or delete a new album in the database.
-     **********************************************************************/
+/**********************************************************************
+ * Author:  Rory Wastle
+ * Date:    November 2 2021
+ * Purpose: To edit or delete a new album in the database.
+ **********************************************************************/
     
     session_start();
 
     require('db_connect.php');
-    //require('authenticate.php');
 
+    //  If the get parameter is set.
     if(isset($_GET['albumID'])){
         $albumID = filter_input(INPUT_GET, 'albumID', FILTER_SANITIZE_NUMBER_INT);
 
@@ -20,11 +20,13 @@
         $statement->execute();
         $album = $statement->fetch();
 
+        //  Select the genres.
         $query = "SELECT * FROM genres ORDER BY genre";
         $statement = $db->prepare($query);
         $statement->execute();
         $genres = $statement->fetchAll();
 
+        //  Select the genres associated with this album.
         $query = "SELECT * FROM albumgenre WHERE albumID = :albumID";
         $statement = $db->prepare($query);
         $statement->bindValue(':albumID', $albumID, PDO::PARAM_INT);
@@ -65,7 +67,7 @@
             <?php if($album['coverURL'] == NULL): ?>
                 <div class="form-group p-3">
                     <label for="image">Album Cover</label>
-                    <input class="form-control" type="file" name="image" id="image">
+                    <input class="form-control" type="file" name="image" id="image" />
                 </div>
             <?php else: ?>
                 <div class="form-group p-3">
