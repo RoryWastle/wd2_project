@@ -218,6 +218,8 @@
         //  execute() will check for possible SQL injection and remove if necessary
         if($statement->execute()){
             $valid = true;
+
+            $albumID = "";
             
             //  If the command was to create, associate genres with the recently added album.
             if($_POST['command'] == "Create"){
@@ -226,11 +228,18 @@
             }
             //  If the command was to Update, associate genres with the album from the GET album id.
             elseif($_POST['command'] == "Update"){
-                add_genres($_GET['albumID'], $db);
+                $albumID = $_GET['albumID'];
+                add_genres($albumID, $db);
             }
 
-            header("Location: show.php?albumID=".$_GET['albumID']);
-            exit;
+            if ($_POST['command'] != "Delete") {
+                header("Location: show.php?album=".$albumID);
+                exit;
+            }
+            else {
+                header("Location: index.php");
+                exit;
+            }
         }
 
     }

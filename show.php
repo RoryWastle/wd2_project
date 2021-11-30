@@ -176,7 +176,7 @@
     <div class="container float-container">
         <h1 class="pt-3"><?= $album['title'] ?></h1>
 
-        <div class="card" id="album-summary">
+        <div class="card m-3" id="album-summary">
             <div class="card-body">
                 <h4 class="card-title">
                     <?= $album['title'] ?>
