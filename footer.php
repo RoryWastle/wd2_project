@@ -13,7 +13,7 @@
     </div>
 
     <form class="input-group mx-5" action="search.php">
-        <input class="form-control" name="search" id="search" placeholder="Search albums..." />
+        <input class="form-control" name="search" placeholder="Search albums..." />
         <input class="btn btn-outline-primary" type="submit" value="Search" />
     </form>
 </footer>

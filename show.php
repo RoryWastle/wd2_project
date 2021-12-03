@@ -218,7 +218,7 @@
             </div>
         </div>
         <div class="p-3">
-            <p><?= $album['description'] ?></p>
+            <?= $album['description'] ?>
         </div>
         
         <div id="end-of-summary">
@@ -242,7 +242,7 @@
             <?php foreach ($comments as $comment): ?>
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title"><?= $comment['name'] ?></a></h4>
+                        <h4 class="card-title"><?= $comment['name'] ?></h4>
                         <p><?= $comment['comment'] ?></p>
                         <?php if($admin || (isset($_SESSION['user']) && $comment['userID'] == $_SESSION['user'])): ?>
                             <p><a href="?album=<?= $_GET['album'] ?>&toDelete=<?= $comment['commentID'] ?>">Delete Comment</a></p>

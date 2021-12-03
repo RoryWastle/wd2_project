@@ -56,21 +56,21 @@
                 <div class="card-body p-3">
                     <label for="genre1">Genre 1</label>
                     <select class="form-control" id="genre1" name="genre1">
-                        <option value="0"></option>
+                        <option value="0"> </option>
                         <?php foreach ($genres as $genre): ?>
                             <option value=<?= $genre['genreID'] ?>><?= $genre['genre'] ?></option>
                         <?php endforeach ?>
                     </select>
                     <label for="genre2">Genre 2</label>
                     <select class="form-control" id="genre2" name="genre2">
-                        <option value="0"></option>
+                        <option value="0"> </option>
                         <?php foreach ($genres as $genre): ?>
                             <option value=<?= $genre['genreID'] ?>><?= $genre['genre'] ?></option>
                         <?php endforeach ?>
                     </select>
                     <label for="genre3">Genre 3</label>
                     <select class="form-control" id="genre3" name="genre3">
-                        <option value="0"></option>
+                        <option value="0"> </option>
                         <?php foreach ($genres as $genre): ?>
                             <option value=<?= $genre['genreID'] ?>><?= $genre['genre'] ?></option>
                         <?php endforeach ?>

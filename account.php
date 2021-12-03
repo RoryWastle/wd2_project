@@ -146,12 +146,12 @@
 
         <form action="account.php" method="post" class="form-inline">
             <div class="form-group p-3">
-                <label for="passlogin">New Password</label>
+                <label for="newpass1">New Password</label>
                 <input type="password" class="form-control" name="newpass1" id="newpass1" value="<?= $password1 ?>" />
             </div>
             <div class="form-group p-3">
             	<p class="text-danger" id="pass-error">The passwords do not match.</p>
-                <label for="passlogin">Confirm New Password</label>
+                <label for="newpass2">Confirm New Password</label>
                 <input type="password" class="form-control" name="newpass2" id="newpass2" value="<?= $password2 ?>" />
             </div>
             <div class="form-group p-3">
