@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 30, 2021 at 10:52 PM
+-- Generation Time: Dec 03, 2021 at 08:16 PM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 7.3.30
 
@@ -88,10 +88,10 @@ INSERT INTO `albumlikes` (`albumID`, `userID`) VALUES
 (9, 6),
 (10, 2),
 (10, 3),
-(10, 4),
 (10, 6),
 (16, 6),
-(28, 6);
+(28, 6),
+(30, 2);
 
 -- --------------------------------------------------------
 
@@ -105,7 +105,7 @@ CREATE TABLE `albums` (
   `artist` varchar(30) NOT NULL,
   `year` int(4) DEFAULT NULL,
   `coverURL` varchar(200) DEFAULT NULL,
-  `description` varchar(500) DEFAULT NULL,
+  `description` varchar(1000) DEFAULT NULL,
   `likes` int(7) NOT NULL DEFAULT 0,
   `postedBy` int(11) DEFAULT NULL,
   `updated` date NOT NULL DEFAULT current_timestamp()
@@ -116,8 +116,8 @@ CREATE TABLE `albums` (
 --
 
 INSERT INTO `albums` (`albumID`, `title`, `artist`, `year`, `coverURL`, `description`, `likes`, `postedBy`, `updated`) VALUES
-(9, 'Abbey Road', 'The Beatles', 1969, '4-1637008262-abbey-road-5329494f8f038.jpg', '<p>The final album recorded by The Beatles. Stand out tracks<strong> </strong>include <em>Come Together</em> and <em>Here Comes the Sun</em>.</p>', 3, 4, '2021-11-15'),
-(10, 'The Dark Side of the Moon', 'Pink Floyd', 1972, '4-1637008410-the-dark-side-of-the-moon-53afcfaa65a86.jpg', '<p>One of the best selling albums of all time.</p>\r\n<p style=\"padding-left: 40px;\"><strong>Tracklist:</strong></p>\r\n<p style=\"padding-left: 40px;\">Speak to Me</p>\r\n<p style=\"padding-left: 40px;\">Breathe</p>\r\n<p style=\"padding-left: 40px;\">On the Run</p>\r\n<p style=\"padding-left: 40px;\">Time</p>\r\n<p style=\"padding-left: 40px;\">The Great Gig in the Sky</p>\r\n<p style=\"padding-left: 40px;\">Money</p>\r\n<p style=\"padding-left: 40px;\">Us and Them</p>\r\n<p style=\"padding-left: 40px;\">Any Colour You Like</p', 4, 3, '2021-11-29'),
+(9, 'Abbey Road', 'The Beatles', 1969, '4-1637008262-abbey-road-5329494f8f038.jpg', '<p>The final album recorded by The Beatles. Stand out tracks<strong> </strong>include <em>Come Together</em> and <em>Here Comes the Sun</em>.</p>', 3, NULL, '2021-11-15'),
+(10, 'The Dark Side of the Moon', 'Pink Floyd', 1972, '4-1637008410-the-dark-side-of-the-moon-53afcfaa65a86.jpg', '<p>One of the best selling albums of all time.</p>\r\n<p style=\"padding-left: 40px;\"><strong>Tracklist:</strong></p>\r\n<p style=\"padding-left: 40px;\">Speak to Me</p>\r\n<p style=\"padding-left: 40px;\">Breathe</p>\r\n<p style=\"padding-left: 40px;\">On the Run</p>\r\n<p style=\"padding-left: 40px;\">Time</p>\r\n<p style=\"padding-left: 40px;\">The Great Gig in the Sky</p>\r\n<p style=\"padding-left: 40px;\">Money</p>\r\n<p style=\"padding-left: 40px;\">Us and Them</p>\r\n<p style=\"padding-left: 40px;\">Any Colour You Like</p>\r\n<p style=\"padding-left: 40px;\">Brain Damage</p>\r\n<p style=\"padding-left: 40px;\">Eclipse</p>', 4, 3, '2021-12-03'),
 (14, 'Rumours', 'Fleetwood Mac', 1977, NULL, '<p>The eleventh studio album by British-American band Fleetwood Mac, the second of which to include the Stevie Nicks-Lindsey Buckingham lineup. Became one of the best selling albums of all time, including songwriting credits from all five band members (Mick Fleetwood, John McVie, Christine McVie, Lindsey Buckingham, Stevie Nicks).</p>', 0, 6, '2021-11-30'),
 (15, 'The Rise and Fall of Ziggy Stardust and the Spiders From Mars', 'David Bowie', 1972, NULL, '<p>David Bowie\'s concept album, intruducing the character \"Ziggy Stardust\". One of the first glam rock albums to have success in America.</p>', 0, 6, '2021-11-30'),
 (16, '[Led Zeppelin IV]', 'Led Zeppelin', 1971, NULL, '<p>Led Zeppelin\'s fourth (untitled) album. Also called <strong>ZOSO</strong> or <strong>Four Symbols</strong>.</p>\r\n<p>Standout tracks:</p>\r\n<p style=\"padding-left: 40px;\">Stairway to Heaven</p>\r\n<p style=\"padding-left: 40px;\">Black Dog</p>\r\n<p style=\"padding-left: 40px;\">Rock and Roll</p>\r\n<p style=\"padding-left: 40px;\">When the Levee Breaks</p>\r\n<p style=\"padding-left: 40px;\">Going to California</p>\r\n<p style=\"padding-left: 40px;\">Battle of Evermore</p>', 1, 6, '2021-11-30'),
@@ -130,7 +130,7 @@ INSERT INTO `albums` (`albumID`, `title`, `artist`, `year`, `coverURL`, `descrip
 (27, 'Sgt. Pepper&#039;s Lonely Hearts Club Band', 'The Beatles', 1967, NULL, '<p>A landmark album by The Beatles. Moving away from their pop/rock &amp; roll predecessors, the band along with producer George Martin took a more studio-focused/experimental approach to recording the album. For example, it took more time to record the closing track <em>A Day in the Life</em> than recording the entirity of The Beatle\'s first album, <em>Please Please Me</em> (1963).</p>', 0, 6, '2021-11-30'),
 (28, 'Are You Experienced?', 'The Jimi Hendrix Experience', 1967, NULL, '<p>The debut album by The Jimi Hendrix Experience</p>', 1, 3, '2021-11-29'),
 (29, 'War', 'U2', 1983, NULL, '<p>U2\'s third studio album. Includes <em>Sunday Bloody Sunday</em>, <em>New Year\'s Day</em>, and <em>Seconds</em>.</p>', 0, 3, '2021-11-29'),
-(30, 'Synchronicity', 'The Police', 1983, NULL, '<p>The final studio album by The Police.</p>\r\n<p><strong>Standout Tracks:</strong></p>\r\n<p style=\"padding-left: 40px;\">Every Breath You Take</p>\r\n<p style=\"padding-left: 40px;\">King of Pain</p>\r\n<p style=\"padding-left: 40px;\">Synchronicity II</p>\r\n<p style=\"padding-left: 40px;\">Tea in the Sahara</p>', 0, 3, '2021-11-29'),
+(30, 'Synchronicity', 'The Police', 1983, '2-1638558941-synchronicity-6074b769ce00e.jpg', '<p>The final studio album by The Police.</p>\r\n<p><strong>Standout Tracks:</strong></p>\r\n<p style=\"padding-left: 40px;\">Every Breath You Take</p>\r\n<p style=\"padding-left: 40px;\">King of Pain</p>\r\n<p style=\"padding-left: 40px;\">Synchronicity II</p>\r\n<p style=\"padding-left: 40px;\">Tea in the Sahara</p>', 1, 2, '2021-12-03'),
 (31, 'Pyromania', 'Def Leppard', 1983, NULL, '<p>The third studio album by british band Def Leppard. Featured a more polished hard rock sound as opposed to the band\'s heavy metal predecessors. Produced by Mutt Lange.</p>', 0, 3, '2021-11-29');
 
 -- --------------------------------------------------------
@@ -151,9 +151,8 @@ CREATE TABLE `comments` (
 --
 
 INSERT INTO `comments` (`commentID`, `comment`, `albumID`, `userID`) VALUES
-(2, 'Great songs on this album. John, Paul, George, and Ringo created a masterpiece.', 9, 4),
-(5, 'Amazing album! Love The Beatles!', 9, 3),
-(9, 'Amazing album', 10, 3);
+(9, 'Amazing album', 10, 3),
+(10, 'A new comment', 9, 3);
 
 -- --------------------------------------------------------
 
@@ -212,7 +211,6 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`userID`, `name`, `password`, `admin`) VALUES
 (2, 'admin1', '$2y$10$Tw1iif1g1OAezBEAzUzMI.rptKwFuOhHLkHyYwlo.l8VQig5bBQZu', 1),
 (3, 'Rory', '$2y$10$OHjgocvM2HeAx0ovjAMLDO.2IhO5MqxwP.E673Pu7peW4S4/sQTam', 0),
-(4, 'alan', '$2y$10$l5pdH28sjGIIFSEZyitRau0YR7kevcmI9lKqz00qPKSqDEKSitIXa', 0),
 (6, 'admin2', '$2y$10$pv3Rmb1fLQq9JqeL2RvnROpMPe8s44tj601pvsAE5kx3LqzoNBFZi', 1);
 
 --
@@ -274,13 +272,13 @@ ALTER TABLE `albums`
 -- AUTO_INCREMENT for table `comments`
 --
 ALTER TABLE `comments`
-  MODIFY `commentID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `commentID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `genres`
 --
 ALTER TABLE `genres`
-  MODIFY `genreID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `genreID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `users`

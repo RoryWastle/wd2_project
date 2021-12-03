@@ -83,8 +83,8 @@
 
     //  Required files.
     require('db_connect.php');
-    require('\xampp\htdocs\a\php-image-resize-master\lib\ImageResize.php');
-    require('\xampp\htdocs\a\php-image-resize-master\lib\ImageResizeException.php');
+    require('php-image-resize-master\lib\ImageResize.php');
+    require('php-image-resize-master\lib\ImageResizeException.php');
 
     $valid = false;
     
